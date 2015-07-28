@@ -1088,7 +1088,7 @@ namespace System.Net.Http
 
             if (state.CancellationToken.IsCancellationRequested)
             {
-                state.Tcs.TrySetCanceled();
+                state.Tcs.TrySetCanceled(state.CancellationToken);
                 return;
             }
 
