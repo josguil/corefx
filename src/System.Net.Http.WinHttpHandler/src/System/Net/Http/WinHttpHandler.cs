@@ -1088,7 +1088,7 @@ namespace System.Net.Http
 
             if (state.CancellationToken.IsCancellationRequested)
             {
-                state.Tcs.TrySetCanceled();
+                state.Tcs.TrySetCanceled(state.CancellationToken);
                 return;
             }
 
@@ -2063,7 +2063,7 @@ namespace System.Net.Http
             if (state.CancellationToken.IsCancellationRequested)
             {
                 // If the exception was due to the cancellation token being canceled, throw cancellation exception.
-                state.Tcs.TrySetCanceled();
+                state.Tcs.TrySetCanceled(state.CancellationToken);
             }
             else if (ex is WinHttpException || ex is IOException)
             {
