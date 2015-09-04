@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="System.Net.SocketLegacyExtensions.cs" />
+    <Compile Include="System.Net.Sockets.Legacy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

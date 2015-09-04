@@ -18,15 +18,15 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'OSX_Release|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Windows_Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Windows_Release|AnyCPU' " />
+  
   <PropertyGroup>
     <!-- SYSTEM_NET_SOCKETS_DLL is required to allow source-level code sharing for types defined within the 
          System.Net.Internals namespace. -->
     <DefineConstants>$(DefineConstants);SYSTEM_NET_SOCKETS_DLL</DefineConstants>
   </PropertyGroup>
+  
   <ItemGroup>
     <Compile Include="System\Net\DnsAPMExtensions.cs" />
-    <Compile Include="System\Net\Sockets\SocketLegacyExtensions.cs" />
-    <Compile Include="System\Net\StartIPOptions.cs" />
     <Compile Include="System\Net\SocketPerfCounters.cs" />
     <Compile Include="System\Net\Sockets\IOControlCode.cs" />
     <Compile Include="System\Net\Sockets\IPPacketInformation.cs" />
@@ -40,6 +40,7 @@
     <Compile Include="System\Net\Sockets\SocketFlags.cs" />
     <Compile Include="System\Net\Sockets\SocketInformation.cs" />
     <Compile Include="System\Net\Sockets\SocketInformationOptions.cs" />
+    <Compile Include="System\Net\Sockets\SocketLegacyExtensions.cs" />
     <Compile Include="System\Net\Sockets\SocketOptionLevel.cs" />
     <Compile Include="System\Net\Sockets\SocketOptionName.cs" />
     <Compile Include="System\Net\Sockets\SocketShutdown.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="System\Net\Sockets\_OverlappedAsyncResult.cs" />
     <Compile Include="System\Net\Sockets\_ReceiveMessageOverlappedAsyncResult.cs" />
     <Compile Include="System\Net\Sockets\TransportType.cs" />
+    <Compile Include="System\Net\StartIPOptions.cs" />
     <!-- Logging -->
     <Compile Include="$(CommonPath)\System\Net\Shims\TraceSource.cs">
       <Link>Common\System\Net\Shims\TraceSource.cs</Link>
