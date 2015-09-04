@@ -4609,11 +4609,11 @@ namespace System.Net.Sockets
            IAsyncResult - Async result used to retreive resultant new socket
 
         --*/
-        public IAsyncResult BeginAccept(AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginAccept(AsyncCallback callback, object state)
         {
             if (!_isDisconnected)
             {
-                return BeginAccept(0, callback, state);
+                return InternalBeginAccept(0, callback, state);
             }
 
             if (s_LoggingEnabled)
@@ -4670,7 +4670,7 @@ namespace System.Net.Sockets
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
-        public IAsyncResult BeginAccept(int receiveSize, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginAccept(int receiveSize, AsyncCallback callback, object state)
         {
             return BeginAccept(null, receiveSize, callback, state);
         }
@@ -4810,7 +4810,7 @@ namespace System.Net.Sockets
             {
                 int bytesTransferred;
                 byte[] buffer;
-                return EndAccept(out buffer, out bytesTransferred, asyncResult);
+                return InternalEndAccept(out buffer, out bytesTransferred, asyncResult);
             }
 #endif // !FEATURE_PAL
 
@@ -4873,12 +4873,12 @@ namespace System.Net.Sockets
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
-        public Socket EndAccept(out byte[] buffer, IAsyncResult asyncResult)
+        internal Socket InternalEndAccept(out byte[] buffer, IAsyncResult asyncResult)
         {
             int bytesTransferred;
             byte[] innerBuffer;
 
-            Socket socket = EndAccept(out innerBuffer, out bytesTransferred, asyncResult);
+            Socket socket = InternalEndAccept(out innerBuffer, out bytesTransferred, asyncResult);
             buffer = new byte[bytesTransferred];
             Array.Copy(innerBuffer, buffer, bytesTransferred);
             return socket;
@@ -4887,7 +4887,7 @@ namespace System.Net.Sockets
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
-        public Socket EndAccept(out byte[] buffer, out int bytesTransferred, IAsyncResult asyncResult)
+        internal Socket InternalEndAccept(out byte[] buffer, out int bytesTransferred, IAsyncResult asyncResult)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "EndAccept", asyncResult);
             if (CleanedUp)
