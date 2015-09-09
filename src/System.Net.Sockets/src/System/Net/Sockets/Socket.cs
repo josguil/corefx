@@ -2721,7 +2721,7 @@ namespace System.Net.Sockets
            IAsyncResult - Async result used to retreive result
 
         --*/
-        public IAsyncResult BeginConnect(EndPoint remoteEP, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginConnect(EndPoint remoteEP, AsyncCallback callback, object state)
         {
             //
             //  parameter validation
@@ -2751,7 +2751,7 @@ namespace System.Net.Sockets
                     throw new NotSupportedException(SR.net_invalidversion);
                 }
 
-                return BeginConnect(dnsEP.Host, dnsEP.Port, callback, state);
+                return InternalBeginConnect(dnsEP.Host, dnsEP.Port, callback, state);
             }
 
             return BeginConnectEx(remoteEP, true, callback, state);
@@ -2762,7 +2762,7 @@ namespace System.Net.Sockets
             return BeginConnectEx(remoteEP, false, callback, state);
         }
 
-        public IAsyncResult BeginConnect(string host, int port, AsyncCallback requestCallback, object state)
+        internal IAsyncResult InternalBeginConnect(string host, int port, AsyncCallback requestCallback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginConnect", host);
 
@@ -2809,7 +2809,7 @@ namespace System.Net.Sockets
             return result;
         }
 
-        public IAsyncResult BeginConnect(IPAddress address, int port, AsyncCallback requestCallback, object state)
+        internal IAsyncResult InternalBeginConnect(IPAddress address, int port, AsyncCallback requestCallback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginConnect", address);
             if (CleanedUp)
@@ -2831,12 +2831,12 @@ namespace System.Net.Sockets
                 throw new NotSupportedException(SR.net_invalidversion);
             }
 
-            IAsyncResult result = BeginConnect(new IPEndPoint(address, port), requestCallback, state);
+            IAsyncResult result = InternalBeginConnect(new IPEndPoint(address, port), requestCallback, state);
             if (s_LoggingEnabled) Logging.Exit(Logging.Sockets, this, "BeginConnect", result);
             return result;
         }
 
-        public IAsyncResult BeginConnect(IPAddress[] addresses, int port, AsyncCallback requestCallback, object state)
+        internal IAsyncResult InternalBeginConnect(IPAddress[] addresses, int port, AsyncCallback requestCallback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginConnect", addresses);
             if (CleanedUp)
@@ -2885,7 +2885,7 @@ namespace System.Net.Sockets
 
         // Supports DisconnectEx - this provides completion port IO and support for
         //disconnect and reconnects
-        public IAsyncResult BeginDisconnect(bool reuseSocket, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginDisconnect(bool reuseSocket, AsyncCallback callback, object state)
         {
             // Start context-flowing op.  No need to lock - we don't use the context till the callback.
             DisconnectOverlappedAsyncResult asyncResult = new DisconnectOverlappedAsyncResult(this, state, callback);
@@ -3012,7 +3012,7 @@ namespace System.Net.Sockets
            int - Return code from aync Connect, 0 for success, SocketError.NotConnected otherwise
 
         --*/
-        public void EndConnect(IAsyncResult asyncResult)
+        internal void InternalEndConnect(IAsyncResult asyncResult)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "EndConnect", asyncResult);
             if (CleanedUp)
@@ -3095,7 +3095,7 @@ namespace System.Net.Sockets
             }
         }
 
-        public void EndDisconnect(IAsyncResult asyncResult)
+        internal void InternalEndDisconnect(IAsyncResult asyncResult)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "EndDisconnect", asyncResult);
             if (CleanedUp)
@@ -3171,10 +3171,10 @@ namespace System.Net.Sockets
            IAsyncResult - Async result used to retreive result
 
         --*/
-        public IAsyncResult BeginSend(byte[] buffer, int offset, int size, SocketFlags socketFlags, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginSend(byte[] buffer, int offset, int size, SocketFlags socketFlags, AsyncCallback callback, object state)
         {
             SocketError errorCode;
-            IAsyncResult result = BeginSend(buffer, offset, size, socketFlags, out errorCode, callback, state);
+            IAsyncResult result = InternalBeginSend(buffer, offset, size, socketFlags, out errorCode, callback, state);
             if (errorCode != SocketError.Success && errorCode != SocketError.IOPending)
             {
                 throw new SocketException((int)errorCode);
@@ -3182,7 +3182,7 @@ namespace System.Net.Sockets
             return result;
         }
 
-        public IAsyncResult BeginSend(byte[] buffer, int offset, int size, SocketFlags socketFlags, out SocketError errorCode, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginSend(byte[] buffer, int offset, int size, SocketFlags socketFlags, out SocketError errorCode, AsyncCallback callback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginSend", "");
 
@@ -3305,10 +3305,10 @@ namespace System.Net.Sockets
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
-        public IAsyncResult BeginSend(IList<ArraySegment<byte>> buffers, SocketFlags socketFlags, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginSend(IList<ArraySegment<byte>> buffers, SocketFlags socketFlags, AsyncCallback callback, object state)
         {
             SocketError errorCode;
-            IAsyncResult result = BeginSend(buffers, socketFlags, out errorCode, callback, state);
+            IAsyncResult result = InternalBeginSend(buffers, socketFlags, out errorCode, callback, state);
             if (errorCode != SocketError.Success && errorCode != SocketError.IOPending)
             {
                 throw new SocketException((int)errorCode);
@@ -3316,7 +3316,7 @@ namespace System.Net.Sockets
             return result;
         }
 
-        public IAsyncResult BeginSend(IList<ArraySegment<byte>> buffers, SocketFlags socketFlags, out SocketError errorCode, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginSend(IList<ArraySegment<byte>> buffers, SocketFlags socketFlags, out SocketError errorCode, AsyncCallback callback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginSend", "");
 
@@ -3423,10 +3423,10 @@ namespace System.Net.Sockets
            int - Number of bytes transferred
 
         --*/
-        public int EndSend(IAsyncResult asyncResult)
+        internal int InternalEndSend(IAsyncResult asyncResult)
         {
             SocketError errorCode;
-            int bytesTransferred = EndSend(asyncResult, out errorCode);
+            int bytesTransferred = InternalEndSend(asyncResult, out errorCode);
             if (errorCode != SocketError.Success)
             {
                 throw new SocketException((int)errorCode);
@@ -3434,7 +3434,7 @@ namespace System.Net.Sockets
             return bytesTransferred;
         }
 
-        public int EndSend(IAsyncResult asyncResult, out SocketError errorCode)
+        internal int InternalEndSend(IAsyncResult asyncResult, out SocketError errorCode)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "EndSend", asyncResult);
             if (CleanedUp)
@@ -3522,7 +3522,7 @@ namespace System.Net.Sockets
            IAsyncResult - Async result used to retreive result
 
         --*/
-        public IAsyncResult BeginSendTo(byte[] buffer, int offset, int size, SocketFlags socketFlags, EndPoint remoteEP, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginSendTo(byte[] buffer, int offset, int size, SocketFlags socketFlags, EndPoint remoteEP, AsyncCallback callback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginSendTo", "");
 
@@ -3651,7 +3651,7 @@ namespace System.Net.Sockets
            int - Number of bytes transferred
 
         --*/
-        public int EndSendTo(IAsyncResult asyncResult)
+        internal int InternalEndSendTo(IAsyncResult asyncResult)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "EndSendTo", asyncResult);
             if (CleanedUp)
@@ -3738,10 +3738,10 @@ namespace System.Net.Sockets
            IAsyncResult - Async result used to retreive result
 
         --*/
-        public IAsyncResult BeginReceive(byte[] buffer, int offset, int size, SocketFlags socketFlags, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginReceive(byte[] buffer, int offset, int size, SocketFlags socketFlags, AsyncCallback callback, object state)
         {
             SocketError errorCode;
-            IAsyncResult result = BeginReceive(buffer, offset, size, socketFlags, out errorCode, callback, state);
+            IAsyncResult result = InternalBeginReceive(buffer, offset, size, socketFlags, out errorCode, callback, state);
             if (errorCode != SocketError.Success && errorCode != SocketError.IOPending)
             {
                 throw new SocketException((int)errorCode);
@@ -3749,7 +3749,7 @@ namespace System.Net.Sockets
             return result;
         }
 
-        public IAsyncResult BeginReceive(byte[] buffer, int offset, int size, SocketFlags socketFlags, out SocketError errorCode, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginReceive(byte[] buffer, int offset, int size, SocketFlags socketFlags, out SocketError errorCode, AsyncCallback callback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginReceive", "");
 
@@ -3876,10 +3876,10 @@ namespace System.Net.Sockets
             return errorCode;
         }
 
-        public IAsyncResult BeginReceive(IList<ArraySegment<byte>> buffers, SocketFlags socketFlags, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginReceive(IList<ArraySegment<byte>> buffers, SocketFlags socketFlags, AsyncCallback callback, object state)
         {
             SocketError errorCode;
-            IAsyncResult result = BeginReceive(buffers, socketFlags, out errorCode, callback, state);
+            IAsyncResult result = InternalBeginReceive(buffers, socketFlags, out errorCode, callback, state);
             if (errorCode != SocketError.Success && errorCode != SocketError.IOPending)
             {
                 throw new SocketException((int)errorCode);
@@ -3887,7 +3887,7 @@ namespace System.Net.Sockets
             return result;
         }
 
-        public IAsyncResult BeginReceive(IList<ArraySegment<byte>> buffers, SocketFlags socketFlags, out SocketError errorCode, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginReceive(IList<ArraySegment<byte>> buffers, SocketFlags socketFlags, out SocketError errorCode, AsyncCallback callback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginReceive", "");
 
@@ -4014,10 +4014,10 @@ namespace System.Net.Sockets
            int - Number of bytes transferred
 
         --*/
-        public int EndReceive(IAsyncResult asyncResult)
+        internal int InternalEndReceive(IAsyncResult asyncResult)
         {
             SocketError errorCode;
-            int bytesTransferred = EndReceive(asyncResult, out errorCode);
+            int bytesTransferred = InternalEndReceive(asyncResult, out errorCode);
             if (errorCode != SocketError.Success)
             {
                 throw new SocketException((int)errorCode);
@@ -4025,7 +4025,7 @@ namespace System.Net.Sockets
             return bytesTransferred;
         }
 
-        public int EndReceive(IAsyncResult asyncResult, out SocketError errorCode)
+        internal int InternalEndReceive(IAsyncResult asyncResult, out SocketError errorCode)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "EndReceive", asyncResult);
             if (CleanedUp)
@@ -4096,7 +4096,7 @@ namespace System.Net.Sockets
             return bytesTransferred;
         }
 
-        public IAsyncResult BeginReceiveMessageFrom(byte[] buffer, int offset, int size, SocketFlags socketFlags, ref EndPoint remoteEP, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginReceiveMessageFrom(byte[] buffer, int offset, int size, SocketFlags socketFlags, ref EndPoint remoteEP, AsyncCallback callback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginReceiveMessageFrom", "");
             GlobalLog.Print("Socket#" + Logging.HashString(this) + "::BeginReceiveMessageFrom() size:" + size.ToString());
@@ -4232,7 +4232,7 @@ namespace System.Net.Sockets
             return asyncResult;
         }
 
-        public int EndReceiveMessageFrom(IAsyncResult asyncResult, ref SocketFlags socketFlags, ref EndPoint endPoint, out IPPacketInformation ipPacketInformation)
+        internal int InternalEndReceiveMessageFrom(IAsyncResult asyncResult, ref SocketFlags socketFlags, ref EndPoint endPoint, out IPPacketInformation ipPacketInformation)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "EndReceiveMessageFrom", asyncResult);
             if (CleanedUp)
@@ -4347,7 +4347,7 @@ namespace System.Net.Sockets
            IAsyncResult - Async result used to retreive result
 
         --*/
-        public IAsyncResult BeginReceiveFrom(byte[] buffer, int offset, int size, SocketFlags socketFlags, ref EndPoint remoteEP, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginReceiveFrom(byte[] buffer, int offset, int size, SocketFlags socketFlags, ref EndPoint remoteEP, AsyncCallback callback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginReceiveFrom", "");
 
@@ -4501,7 +4501,7 @@ namespace System.Net.Sockets
            int - Number of bytes transferred
 
         --*/
-        public int EndReceiveFrom(IAsyncResult asyncResult, ref EndPoint endPoint)
+        internal int InternalEndReceiveFrom(IAsyncResult asyncResult, ref EndPoint endPoint)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "EndReceiveFrom", asyncResult);
             if (CleanedUp)
@@ -4672,11 +4672,11 @@ namespace System.Net.Sockets
         /// </devdoc>
         internal IAsyncResult InternalBeginAccept(int receiveSize, AsyncCallback callback, object state)
         {
-            return BeginAccept(null, receiveSize, callback, state);
+            return InternalBeginAccept(null, receiveSize, callback, state);
         }
 
         //  This is the true async version that uses AcceptEx
-        public IAsyncResult BeginAccept(Socket acceptSocket, int receiveSize, AsyncCallback callback, object state)
+        internal IAsyncResult InternalBeginAccept(Socket acceptSocket, int receiveSize, AsyncCallback callback, object state)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "BeginAccept", "");
             if (CleanedUp)
@@ -4797,7 +4797,7 @@ namespace System.Net.Sockets
            Socket - a valid socket if successful
 
         --*/
-        public Socket EndAccept(IAsyncResult asyncResult)
+        internal Socket InternalEndAccept(IAsyncResult asyncResult)
         {
             if (s_LoggingEnabled) Logging.Enter(Logging.Sockets, this, "EndAccept", asyncResult);
             if (CleanedUp)
@@ -7215,7 +7215,7 @@ namespace System.Net.Sockets
                 {
                     try
                     {
-                        context.socket.EndConnect((IAsyncResult)result);
+                        context.socket.InternalEndConnect((IAsyncResult)result);
                     }
                     catch (Exception exception)
                     {
