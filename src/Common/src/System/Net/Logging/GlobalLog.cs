@@ -258,6 +258,7 @@ namespace System.Net
             {
                 bufferSegment[i] = buffer[offset + i];
             }
+            if (length == 0) return;
 
             EventSourceLogging.Log.DebugDumpArray(bufferSegment);
         }
