@@ -38,6 +38,9 @@
     <Compile Include="$(CommonPath)\System\Net\Logging\EventSourceLogging.cs">
       <Link>Common\System\Net\Logging\EventSourceLogging.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\System\Net\Logging\SystemNetEventSource.cs">
+      <Link>Common\System\Net\Logging\SystemNetEventSource.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\System\Net\InternalException.cs">
       <Link>Common\System\Net\InternalException.cs</Link>
     </Compile>
