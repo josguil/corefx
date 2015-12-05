@@ -9,37 +9,14 @@ using System.Threading;
 
 namespace System.Net
 {
-    internal class Logging
+    internal static class Logging
     {
-        private static volatile bool s_loggingEnabled = true;
         private static volatile bool s_loggingInitialized;
 
         private const int DefaultMaxDumpSize = 1024;
-        private const bool DefaultUseProtocolTextOnly = false;
 
-        private const string AttributeNameMaxSize = "maxdatasize";
-        private const string AttributeNameTraceMode = "tracemode";
-        private static readonly string[] s_supportedAttributes = new string[] { AttributeNameMaxSize, AttributeNameTraceMode };
-
-        private const string AttributeValueProtocolOnly = "protocolonly";
-
-        private const string TraceSourceWebName = "System.Net";
-        private const string TraceSourceHttpListenerName = "System.Net.HttpListener";
-        private const string TraceSourceSocketsName = "System.Net.Sockets";
-        private const string TraceSourceWebSocketsName = "System.Net.WebSockets";
-        private const string TraceSourceCacheName = "System.Net.Cache";
-        private const string TraceSourceHttpName = "System.Net.Http";
-
-        private static TraceSource s_webTraceSource;
-        private static TraceSource s_httpListenerTraceSource;
-        private static TraceSource s_socketsTraceSource;
-        private static TraceSource s_webSocketsTraceSource;
-        private static TraceSource s_cacheTraceSource;
-        private static TraceSource s_traceSourceHttpName;
-
-        private Logging()
-        {
-        }
+        private static SocketsEventSource s_socketsEventSource;
+        private static WebEventSource s_webEventSource;
 
         private static object s_internalSyncObject;
         private static object InternalSyncObject
@@ -64,17 +41,11 @@ namespace System.Net
                 {
                     InitializeLogging();
                 }
-
-                return s_loggingEnabled;
+                return LoggingEnabled();
             }
         }
 
-        internal static bool IsVerbose(TraceSource traceSource)
-        {
-            return ValidateSettings(traceSource, TraceEventType.Verbose);
-        }
-
-        internal static TraceSource Web
+        internal static SocketsEventSource Sockets
         {
             get
             {
@@ -83,16 +54,16 @@ namespace System.Net
                     InitializeLogging();
                 }
 
-                if (!s_loggingEnabled)
+                if (!LoggingEnabled())
                 {
                     return null;
                 }
 
-                return s_webTraceSource;
+                return s_socketsEventSource;
             }
         }
 
-        internal static TraceSource Http
+        internal static WebEventSource Web
         {
             get
             {
@@ -101,96 +72,15 @@ namespace System.Net
                     InitializeLogging();
                 }
 
-                if (!s_loggingEnabled)
+                if (!LoggingEnabled())
                 {
                     return null;
                 }
 
-                return s_traceSourceHttpName;
+                return s_webEventSource;
             }
         }
 
-        internal static TraceSource HttpListener
-        {
-            get
-            {
-                if (!s_loggingInitialized)
-                {
-                    InitializeLogging();
-                }
-
-                if (!s_loggingEnabled)
-                {
-                    return null;
-                }
-
-                return s_httpListenerTraceSource;
-            }
-        }
-
-        internal static TraceSource Sockets
-        {
-            get
-            {
-                if (!s_loggingInitialized)
-                {
-                    InitializeLogging();
-                }
-
-                if (!s_loggingEnabled)
-                {
-                    return null;
-                }
-
-                return s_socketsTraceSource;
-            }
-        }
-
-        internal static TraceSource RequestCache
-        {
-            get
-            {
-                if (!s_loggingInitialized)
-                {
-                    InitializeLogging();
-                }
-
-                if (!s_loggingEnabled)
-                {
-                    return null;
-                }
-
-                return s_cacheTraceSource;
-            }
-        }
-
-        internal static TraceSource WebSockets
-        {
-            get
-            {
-                if (!s_loggingInitialized)
-                {
-                    InitializeLogging();
-                }
-
-                if (!s_loggingEnabled)
-                {
-                    return null;
-                }
-
-                return s_webSocketsTraceSource;
-            }
-        }
-
-        private static bool GetUseProtocolTextSetting(TraceSource traceSource)
-        {
-            return DefaultUseProtocolTextOnly;
-        }
-
-        private static int GetMaxDumpSizeSetting(TraceSource traceSource)
-        {
-            return DefaultMaxDumpSize;
-        }
 
         // Sets up internal config settings for logging.
         private static void InitializeLogging()
@@ -199,86 +89,43 @@ namespace System.Net
             {
                 if (!s_loggingInitialized)
                 {
-                    bool loggingEnabled = false;
-                    s_webTraceSource = new NclTraceSource(TraceSourceWebName);
-                    s_httpListenerTraceSource = new NclTraceSource(TraceSourceHttpListenerName);
-                    s_socketsTraceSource = new NclTraceSource(TraceSourceSocketsName);
-                    s_webSocketsTraceSource = new NclTraceSource(TraceSourceWebSocketsName);
-                    s_cacheTraceSource = new NclTraceSource(TraceSourceCacheName);
-                    s_traceSourceHttpName = new NclTraceSource(TraceSourceHttpName);
-
+                    s_socketsEventSource = SocketsEventSource.Log;
+                    s_webEventSource = WebEventSource.Log;
                     GlobalLog.Print("Initalizating tracing");
 
-                    try
-                    {
-                        loggingEnabled = (s_webTraceSource.Switch.ShouldTrace(TraceEventType.Critical) ||
-                                          s_httpListenerTraceSource.Switch.ShouldTrace(TraceEventType.Critical) ||
-                                          s_socketsTraceSource.Switch.ShouldTrace(TraceEventType.Critical) ||
-                                          s_webSocketsTraceSource.Switch.ShouldTrace(TraceEventType.Critical) ||
-                                          s_cacheTraceSource.Switch.ShouldTrace(TraceEventType.Critical) ||
-                                          s_traceSourceHttpName.Switch.ShouldTrace(TraceEventType.Critical));
-                    }
-                    catch (SecurityException)
-                    {
-                        // These may throw if the caller does not have permission to hook up trace listeners.
-                        // We treat this case as though logging were disabled.
-                        Close();
-                        loggingEnabled = false;
-                    }
-
-                    s_loggingEnabled = loggingEnabled;
                     s_loggingInitialized = true;
                 }
             }
         }
-
-        private static void Close()
+        private static bool LoggingEnabled()
         {
-            if (s_webTraceSource != null)
+            bool loggingEnabled = false;
+            try
             {
-                s_webTraceSource.Close();
+                loggingEnabled = (s_socketsEventSource.IsEnabled() ||
+                                  s_webEventSource.IsEnabled());
             }
-
-            if (s_httpListenerTraceSource != null)
+            catch
             {
-                s_httpListenerTraceSource.Close();
+                loggingEnabled = false;
             }
-
-            if (s_socketsTraceSource != null)
-            {
-                s_socketsTraceSource.Close();
-            }
-
-            if (s_webSocketsTraceSource != null)
-            {
-                s_webSocketsTraceSource.Close();
-            }
-
-            if (s_cacheTraceSource != null)
-            {
-                s_cacheTraceSource.Close();
-            }
-
-            if (s_traceSourceHttpName != null)
-            {
-                s_traceSourceHttpName.Close();
-            }
+            return loggingEnabled;
         }
 
         // Confirms logging is enabled, given current logging settings
-        private static bool ValidateSettings(TraceSource traceSource, TraceEventType traceLevel)
+        private static bool ValidateSettings(SystemNetEventSource eventSource)
         {
-            if (!s_loggingEnabled)
-            {
-                return false;
-            }
-
             if (!s_loggingInitialized)
             {
                 InitializeLogging();
             }
 
-            if (traceSource == null || !traceSource.Switch.ShouldTrace(traceLevel))
+            if (!LoggingEnabled())
+            {
+                return false;
+            }
+
+            if (eventSource == null)
             {
                 return false;
             }
@@ -301,305 +148,178 @@ namespace System.Net
             }
         }
 
-        internal static void PrintLine(TraceSource traceSource, TraceEventType eventType, int id, string msg)
+        private static string GetManagedThread()
         {
-            string logHeader = "[" + Environment.CurrentManagedThreadId.ToString("d4", CultureInfo.InvariantCulture) + "] ";
-            traceSource.TraceEvent(eventType, id, logHeader + msg);
+            return Environment.CurrentManagedThreadId.ToString("d4", CultureInfo.InvariantCulture);
         }
 
-        internal static void Associate(TraceSource traceSource, object objA, object objB)
+        internal static void Enter(SystemNetEventSource eventSource, object obj, string method, object paramObject)
         {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            if (!ValidateSettings(eventSource))
             {
                 return;
             }
+            string caller;
+            string parameters = "";
+            if (obj is string)
+            {
+                caller = obj as string;
+            }
+            else
+            {
+                caller = GetObjectLogHash(obj);
+            }
 
-            string lineA = GetObjectName(objA) + "#" + Logging.HashString(objA);
-            string lineB = GetObjectName(objB) + "#" + Logging.HashString(objB);
+            if (paramObject is string)
+            {
+                parameters = paramObject as string;
+            }
 
-            PrintLine(traceSource, TraceEventType.Information, 0, "Associating " + lineA + " with " + lineB);
+            else if (paramObject != null)
+            {
+                parameters = GetObjectLogHash(paramObject);
+            }
+
+            eventSource.FunctionStart(GetManagedThread(), caller, method, parameters);
         }
 
-        internal static void Enter(TraceSource traceSource, object obj, string method, string param)
+        internal static void Exit(SystemNetEventSource eventSource, object obj, string method, object retObject)
         {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            if (!ValidateSettings(eventSource))
             {
                 return;
             }
+            string caller;
+            string parameters = "";
+            if (obj is string)
+            {
+                caller = obj as string;
+            }
+            else
+            {
+                caller = GetObjectLogHash(obj);
+            }
 
-            Enter(traceSource, GetObjectName(obj) + "#" + Logging.HashString(obj), method, param);
+            if (retObject is string)
+            {
+                parameters = retObject as string;
+            }
+
+            else if (retObject != null)
+            {
+                parameters = GetObjectLogHash(retObject);
+            }
+
+            eventSource.FunctionStop(GetManagedThread(), caller, method, parameters);
         }
 
-        internal static void Enter(TraceSource traceSource, object obj, string method, object paramObject)
+
+        internal static void Exception(SystemNetEventSource eventSource, object obj, string method, Exception e)
         {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            if (!ValidateSettings(eventSource))
             {
                 return;
             }
-
-            Enter(traceSource, GetObjectName(obj) + "#" + Logging.HashString(obj), method, paramObject);
-        }
-
-        internal static void Enter(TraceSource traceSource, string obj, string method, string param)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
-            {
-                return;
-            }
-
-            Enter(traceSource, obj + "::" + method + "(" + param + ")");
-        }
-
-        internal static void Enter(TraceSource traceSource, string obj, string method, object paramObject)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
-            {
-                return;
-            }
-
-            string paramObjectValue = "";
-            if (paramObject != null)
-            {
-                paramObjectValue = GetObjectName(paramObject) + "#" + Logging.HashString(paramObject);
-            }
-
-            Enter(traceSource, obj + "::" + method + "(" + paramObjectValue + ")");
-        }
-
-        internal static void Enter(TraceSource traceSource, string method, string parameters)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
-            {
-                return;
-            }
-
-            Enter(traceSource, method + "(" + parameters + ")");
-        }
-
-        internal static void Enter(TraceSource traceSource, string msg)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
-            {
-                return;
-            }
-
-            // Trace.CorrelationManager.StartLogicalOperation();
-            PrintLine(traceSource, TraceEventType.Verbose, 0, msg);
-        }
-
-        internal static void Exit(TraceSource traceSource, object obj, string method, object retObject)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
-            {
-                return;
-            }
-
-            string retValue = "";
-            if (retObject != null)
-            {
-                retValue = GetObjectName(retObject) + "#" + Logging.HashString(retObject);
-            }
-
-            Exit(traceSource, obj, method, retValue);
-        }
-
-        internal static void Exit(TraceSource traceSource, string obj, string method, object retObject)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
-            {
-                return;
-            }
-
-            string retValue = "";
-            if (retObject != null)
-            {
-                retValue = GetObjectName(retObject) + "#" + Logging.HashString(retObject);
-            }
-
-            Exit(traceSource, obj, method, retValue);
-        }
-
-        internal static void Exit(TraceSource traceSource, object obj, string method, string retValue)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
-            {
-                return;
-            }
-
-            Exit(traceSource, GetObjectName(obj) + "#" + Logging.HashString(obj), method, retValue);
-        }
-
-        internal static void Exit(TraceSource traceSource, string obj, string method, string retValue)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
-            {
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(retValue))
-            {
-                retValue = "\t-> " + retValue;
-            }
-
-            Exit(traceSource, obj + "::" + method + "() " + retValue);
-        }
-
-        internal static void Exit(TraceSource traceSource, string method, string parameters)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
-            {
-                return;
-            }
-
-            Exit(traceSource, method + "() " + parameters);
-        }
-
-        internal static void Exit(TraceSource traceSource, string msg)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
-            {
-                return;
-            }
-
-            PrintLine(traceSource, TraceEventType.Verbose, 0, "Exiting " + msg);
-            // Trace.CorrelationManager.StopLogicalOperation();
-        }
-
-        internal static void Exception(TraceSource traceSource, object obj, string method, Exception e)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Error))
-            {
-                return;
-            }
-
             string infoLine = SR.Format(SR.net_log_exception, GetObjectLogHash(obj), method, e.Message);
             if (!string.IsNullOrEmpty(e.StackTrace))
             {
                 infoLine += Environment.NewLine + e.StackTrace;
             }
-
-            PrintLine(traceSource, TraceEventType.Error, 0, infoLine);
+            eventSource.CriticalMessage(GetManagedThread(), infoLine);
         }
 
-        internal static void PrintInfo(TraceSource traceSource, string msg)
+        internal static void PrintInfo(SystemNetEventSource eventSource, string msg)
         {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            if (!ValidateSettings(eventSource))
             {
                 return;
             }
-
-            PrintLine(traceSource, TraceEventType.Information, 0, msg);
+            eventSource.DebugMessage(GetManagedThread(), msg);
         }
 
-        internal static void PrintInfo(TraceSource traceSource, object obj, string msg)
+        internal static void PrintInfo(SystemNetEventSource eventSource, object obj, string msg)
         {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            if (!ValidateSettings(eventSource))
             {
                 return;
             }
-
-            PrintLine(traceSource, TraceEventType.Information, 0,
-                                   GetObjectName(obj) + "#" + Logging.HashString(obj)
-                                   + " - " + msg);
+            eventSource.DebugMessage(GetManagedThread(), GetObjectLogHash(obj), msg);
         }
 
-        internal static void PrintInfo(TraceSource traceSource, object obj, string method, string param)
+        internal static void PrintWarning(SystemNetEventSource eventSource, object obj, string method, string msg)
         {
-            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            if (!ValidateSettings(eventSource))
             {
                 return;
             }
-
-            PrintLine(traceSource, TraceEventType.Information, 0,
-                                   GetObjectName(obj) + "#" + Logging.HashString(obj)
-                                   + "::" + method + "(" + param + ")");
+            eventSource.WarningMessage(GetManagedThread(), GetObjectLogHash(obj), method, msg);
         }
 
-        internal static void PrintWarning(TraceSource traceSource, string msg)
+        internal static void PrintError(SystemNetEventSource eventSource, string msg)
         {
-            if (!ValidateSettings(traceSource, TraceEventType.Warning))
+            if (!ValidateSettings(eventSource))
             {
                 return;
             }
-
-            PrintLine(traceSource, TraceEventType.Warning, 0, msg);
+            eventSource.CriticalMessage(GetManagedThread(), msg);
         }
 
-        internal static void PrintWarning(TraceSource traceSource, object obj, string method, string msg)
+        internal static void PrintError(SystemNetEventSource eventSource, object obj, string method, string msg)
         {
-            if (!ValidateSettings(traceSource, TraceEventType.Warning))
+            if (!ValidateSettings(eventSource))
             {
                 return;
             }
-
-            PrintLine(traceSource, TraceEventType.Warning, 0,
-                                   GetObjectName(obj) + "#" + Logging.HashString(obj)
-                                   + "::" + method + "() - " + msg);
-        }
-
-        internal static void PrintError(TraceSource traceSource, string msg)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Error))
-            {
-                return;
-            }
-
-            PrintLine(traceSource, TraceEventType.Error, 0, msg);
-        }
-
-        internal static void PrintError(TraceSource traceSource, object obj, string method, string msg)
-        {
-            if (!ValidateSettings(traceSource, TraceEventType.Error))
-            {
-                return;
-            }
-
-            PrintLine(traceSource, TraceEventType.Error, 0,
-                                   GetObjectName(obj) + "#" + Logging.HashString(obj)
-                                   + "::" + method + "() - " + msg);
+            eventSource.CriticalMessage(GetManagedThread(), GetObjectLogHash(obj) + "::" + method + "() - " + msg);
         }
 
         internal static string GetObjectLogHash(object obj)
         {
+            if (obj == null)
+            {
+                return "null";
+            }
             return GetObjectName(obj) + "#" + Logging.HashString(obj);
         }
 
-        internal static void Dump(TraceSource traceSource, object obj, string method, IntPtr bufferPtr, int length)
+        internal static void Dump(SystemNetEventSource eventSource, object obj, string method, IntPtr bufferPtr, int length)
         {
-            if (!ValidateSettings(traceSource, TraceEventType.Verbose) || bufferPtr == IntPtr.Zero || length < 0)
+            if (!ValidateSettings(eventSource) || bufferPtr == IntPtr.Zero || length < 0)
             {
                 return;
             }
 
             byte[] buffer = new byte[length];
             Marshal.Copy(bufferPtr, buffer, 0, length);
-            Dump(traceSource, obj, method, buffer, 0, length);
+            DumpArray(eventSource, obj, method, buffer, 0, length);
         }
 
-        internal static void Dump(TraceSource traceSource, object obj, string method, byte[] buffer, int offset, int length)
+        internal static void Dump(SystemNetEventSource traceSource, object obj, string method, byte[] buffer, int offset, int length)
         {
-            if (!ValidateSettings(traceSource, TraceEventType.Verbose))
+            if (!ValidateSettings(traceSource))
             {
                 return;
             }
-
+            DumpArray(traceSource, obj, method, buffer, offset, length);
+        }
+        private static void DumpArray(SystemNetEventSource eventSource, object obj, string method, byte[] buffer, int offset, int length)
+        {
             if (buffer == null)
             {
-                PrintLine(traceSource, TraceEventType.Verbose, 0, "(null)");
+                eventSource.DebugDumpArray(GetManagedThread(), "(null)");
                 return;
             }
 
             if (offset > buffer.Length)
             {
-                PrintLine(traceSource, TraceEventType.Verbose, 0, "(offset out of range)");
+                eventSource.DebugDumpArray(GetManagedThread(), "(offset out of range)");
                 return;
             }
-
-            PrintLine(traceSource, TraceEventType.Verbose, 0, "Data from " + GetObjectName(obj) + "#" + Logging.HashString(obj) + "::" + method);
-            int maxDumpSize = GetMaxDumpSizeSetting(traceSource);
+            eventSource.DebugDumpArray(GetManagedThread(), "Data from " + GetObjectLogHash(obj) + "::" + method);
+            int maxDumpSize = DefaultMaxDumpSize;
             if (length > maxDumpSize)
             {
-                PrintLine(traceSource, TraceEventType.Verbose, 0, "(printing " + maxDumpSize.ToString(NumberFormatInfo.InvariantInfo) + " out of " + length.ToString(NumberFormatInfo.InvariantInfo) + ")");
+                eventSource.DebugDumpArray(GetManagedThread(), "(printing " + maxDumpSize.ToString(NumberFormatInfo.InvariantInfo) + " out of " + length.ToString(NumberFormatInfo.InvariantInfo) + ")");
                 length = maxDumpSize;
             }
 
@@ -629,13 +349,11 @@ namespace System.Net
                                 ? '.'
                                 : (char)(buffer[offset + i]);
                 }
-
-                PrintLine(traceSource, TraceEventType.Verbose, 0, disp);
+                eventSource.DebugDumpArray(GetManagedThread(), disp);
                 offset += n;
                 length -= n;
             } while (length > 0);
         }
-
         internal static string ObjectToString(object objectValue)
         {
             if (objectValue == null)
@@ -688,16 +406,6 @@ namespace System.Net
             }
 
             return exception.Message + " (" + ExceptionMessage(exception.InnerException) + ")";
-        }
-
-        private class NclTraceSource : TraceSource
-        {
-            internal NclTraceSource(string name) : base(name) { }
-
-            protected internal string[] GetSupportedAttributes()
-            {
-                return Logging.s_supportedAttributes;
-            }
         }
     }
 }

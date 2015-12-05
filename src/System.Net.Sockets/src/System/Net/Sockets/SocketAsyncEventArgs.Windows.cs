@@ -1062,7 +1062,7 @@ namespace System.Net.Sockets
                     else if (spe._filePath != null)
                     {
                         // This element is a file.
-                        Logging.PrintInfo(Logging.Sockets, _currentSocket, "FinishOperation(" + _completedOperation + "Async)", SR.Format(SR.net_log_socket_not_logged_file, spe._filePath));
+                        Logging.PrintInfo(Logging.Sockets, _currentSocket, "FinishOperation(" + _completedOperation + "Async)" + SR.Format(SR.net_log_socket_not_logged_file, spe._filePath));
                     }
                 }
             }
