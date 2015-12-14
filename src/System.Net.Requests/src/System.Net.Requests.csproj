@@ -42,8 +42,17 @@
     <Compile Include="$(CommonPath)\System\Net\HttpValidationHelpers.cs">
       <Link>Common\System\Net\HttpValidationHelpers.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Net\Logging.cs">
-      <Link>Common\System\Net\Logging.cs</Link>
+    <Compile Include="$(CommonPath)\System\Net\Shims\TraceSource.cs">
+      <Link>Common\System\Net\Shims\TraceSource.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Net\Logging\Logging.cs">
+      <Link>Common\System\Net\Logging\Logging.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Net\Logging\WebEventSource.cs">
+      <Link>Common\System\Net\Logging\WebEventSource.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Net\Logging\NetLogging.cs">
+      <Link>Common\System\Net\Logging\NetLogging.cs</Link>
     </Compile>
     <Compile Include="$(CommonPath)\System\NotImplemented.cs">
       <Link>Common\System\NotImplemented.cs</Link>

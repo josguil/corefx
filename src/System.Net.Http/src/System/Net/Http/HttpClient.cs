@@ -110,7 +110,7 @@ namespace System.Net.Http
         public HttpClient(HttpMessageHandler handler, bool disposeHandler)
             : base(handler, disposeHandler)
         {
-            if (Logging.On) Logging.Enter(Logging.Http, this, ".ctor", handler);
+            if (HttpLogging.On) HttpLogging.Enter(this, ".ctor", handler);
 
             _timeout = s_defaultTimeout;
             _maxResponseContentBufferSize = HttpContent.MaxBufferSize;

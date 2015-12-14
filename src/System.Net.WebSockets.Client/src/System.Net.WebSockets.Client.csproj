@@ -24,10 +24,20 @@
   <ItemGroup>
     <Compile Include="System\Net\WebSockets\ClientWebSocket.cs" />
     <Compile Include="System\Net\WebSockets\ClientWebSocketOptions.cs" />
-
-    <Compile Include="$(CommonPath)\System\Net\Logging.cs">
-      <Link>Common\System\Net\Logging.cs</Link>
+    
+    <Compile Include="$(CommonPath)\System\Net\Shims\TraceSource.cs">
+      <Link>Common\System\Net\Shims\TraceSource.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\System\Net\Logging\Logging.cs">
+      <Link>Common\System\Net\Logging\Logging.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Net\Logging\WebSocketsEventSource.cs">
+      <Link>Common\System\Net\Logging\WebSocketsEventSource.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Net\Logging\WebSocketsLogging.cs">
+      <Link>Common\System\Net\Logging\WebSocketsLogging.cs</Link>
+    </Compile>
+    
     <Compile Include="$(CommonPath)\System\Net\UriScheme.cs">
       <Link>Common\System\Net\UriScheme.cs</Link>
     </Compile>

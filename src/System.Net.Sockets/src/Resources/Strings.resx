@@ -273,4 +273,7 @@
   <data name="ArgumentOutOfRange_Bounds_Lower_Upper" xml:space="preserve">
     <value>Argument must be between {0} and {1}.</value>
   </data>
+  <data name="event_SocketAccepted" xml:space="preserve">
+    <value>Accepted connection from {0} to {1}.</value>
+  </data>
 </root>

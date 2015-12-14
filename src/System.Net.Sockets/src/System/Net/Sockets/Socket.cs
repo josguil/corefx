@@ -86,10 +86,10 @@ namespace System.Net.Sockets
         // Initializes a new instance of the Sockets.Socket class.
         public Socket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
         {
-            s_loggingEnabled = Logging.On;
+            s_loggingEnabled = SocketsLogging.On;
             if (s_loggingEnabled)
             {
-                Logging.Enter(Logging.Sockets, this, "Socket", addressFamily);
+                SocketsLogging.Enter(this, "Socket", addressFamily);
             }
 
             InitializeSockets();
