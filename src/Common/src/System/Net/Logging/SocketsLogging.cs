@@ -164,10 +164,7 @@ namespace System.Net
             {
                 return;
             }
-            //TODO
-            // Uncomment this line when porting code to Git.
-            // string infoLine = SR.Format(SR.net_log_exception, GetObjectLogHash(obj), method, e.Message);
-            string infoLine = e.Message; //TODO remove this line when ported to Git
+            string infoLine = SR.Format(SR.net_log_exception, Logging.GetObjectLogHash(obj), method, e.Message);
             if (!string.IsNullOrEmpty(e.StackTrace))
             {
                 infoLine += Environment.NewLine + e.StackTrace;

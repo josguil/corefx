@@ -30,12 +30,6 @@ namespace System.Net
         {
             WriteEvent((int)EventIdManager.DebugMessage, managedThreadID, message, obj);
         }
-        [Event(100, Keywords = Keywords.Debug,
-    Level = EventLevel.Informational, Message = "[{0}] {2}-{1}")]
-        internal void TestEvent(string managedThreadID, string message, string obj = "")
-        {
-            WriteEvent(100, managedThreadID, message, obj);
-        }
 
         [Event((int)EventIdManager.FunctionStart, Keywords = Keywords.FunctionEntryExit,
             Level = EventLevel.Verbose, Message = "[{0}] {1}::{2}({3})")]
@@ -115,9 +109,9 @@ namespace System.Net
         {
             WriteEvent((int)EventIdManager.DebugDumpArray, managedThreadID, array);
         }
-        // , Message = "[{2}] {3}-{" + SRsocketAccepted + "}"
+
         [Event((int)EventIdManager.SocketAccepted, Keywords = Keywords.Default,
-    Level = EventLevel.Informational)]
+            Level = EventLevel.Informational)]
         internal unsafe void SocketAccepted(string localEp, string remoteEp, string managedThreadID, string obj)
         {
             fixed (char* arg1Ptr = localEp, arg2Ptr = remoteEp, arg3Ptr = managedThreadID, arg4Ptr = obj)
