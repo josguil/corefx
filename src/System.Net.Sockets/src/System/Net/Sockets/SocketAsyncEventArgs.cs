@@ -83,7 +83,7 @@ namespace System.Net.Sockets
 
         private MultipleConnectAsync _multipleConnect;
 
-        private static bool s_loggingEnabled = Logging.On;
+        private static bool s_loggingEnabled = SocketsLogging.On;
 
         public SocketAsyncEventArgs()
         {
@@ -691,7 +691,7 @@ namespace System.Net.Sockets
                         _acceptSocket = _currentSocket.UpdateAcceptSocket(_acceptSocket, _currentSocket._rightEndPoint.Create(remoteSocketAddress));
 
                         if (s_loggingEnabled)
-                            Logging.PrintInfo(Logging.Sockets, _acceptSocket, SR.Format(SR.net_log_socket_accepted, _acceptSocket.RemoteEndPoint, _acceptSocket.LocalEndPoint));
+                            SocketsLogging.Accepted(_acceptSocket, _acceptSocket.RemoteEndPoint, _acceptSocket.LocalEndPoint);
                     }
                     else
                     {
@@ -720,7 +720,7 @@ namespace System.Net.Sockets
                     if (socketError == SocketError.Success)
                     {
                         if (s_loggingEnabled)
-                            Logging.PrintInfo(Logging.Sockets, _currentSocket, SR.Format(SR.net_log_socket_connected, _currentSocket.LocalEndPoint, _currentSocket.RemoteEndPoint));
+                            SocketsLogging.Connected(_currentSocket, _currentSocket.LocalEndPoint, _currentSocket.RemoteEndPoint);
 
                         _currentSocket.SetToConnected();
                         _connectSocket = _currentSocket;

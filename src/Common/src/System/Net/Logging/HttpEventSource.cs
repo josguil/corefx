@@ -8,7 +8,7 @@ namespace System.Net
 {
     [EventSource(Name = "Microsoft-System-Net-Http",
         Guid = "bdd9a83e-1929-5482-0d73-2fe5e1c0e16d")]
-    internal sealed class HttpEventSource : EventSource
+    internal sealed class HttpEventSource : EventSource, ILogging
     {
         private static HttpEventSource s_log = new HttpEventSource();
         private HttpEventSource() { }
@@ -36,7 +36,7 @@ namespace System.Net
 
         [Event((int)EventIdManager.FunctionStart, Keywords = Keywords.FunctionEntryExit,
     Level = EventLevel.Verbose, Message = "[{0}] {1}::{2}({3})")]
-        internal unsafe void FunctionStart(string managedThreadID, string caller, string functionName, string parameters)
+        public unsafe void FunctionStart(string managedThreadID, string caller, string functionName, string parameters)
         {
             fixed (char* arg1Ptr = managedThreadID, arg2Ptr = caller, arg3Ptr = functionName, arg4Ptr = parameters)
             {
@@ -90,6 +90,13 @@ namespace System.Net
         internal void CriticalMessage(string managedThreadID, string message)
         {
             WriteEvent((int)EventIdManager.CriticalMessage, managedThreadID, message);
+        }
+
+        [Event((int)EventIdManager.UriBaseAddress, Keywords = Keywords.Debug,
+Level = EventLevel.Informational, Message = "[{0}] {2}-BaseAddress: '{1}'")]
+        internal void UriBaseAddress(string managedThreadID, string message, string obj)
+        {
+            WriteEvent((int)EventIdManager.UriBaseAddress, managedThreadID, message, obj);
         }
 
         public class Keywords

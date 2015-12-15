@@ -1162,7 +1162,7 @@ namespace System.Net.Sockets
             Socket socket = CreateAcceptSocket(acceptedSocketHandle, _rightEndPoint.Create(socketAddress));
             if (s_loggingEnabled)
             {
-                Logging.PrintInfo(Logging.Sockets, socket, SR.Format(SR.net_log_socket_accepted, socket.RemoteEndPoint, socket.LocalEndPoint));
+                Logging.PrintInfo(Logging.Sockets, socket, SR.Format(SR.event_Accepted, socket.RemoteEndPoint, socket.LocalEndPoint));
                 Logging.Exit(Logging.Sockets, this, "Accept", socket);
             }
             return socket;
@@ -2507,7 +2507,7 @@ namespace System.Net.Sockets
             }
             if (s_loggingEnabled)
             {
-                Logging.PrintInfo(Logging.Sockets, this, SR.Format(SR.net_log_socket_connected, LocalEndPoint, RemoteEndPoint));
+                Logging.PrintInfo(Logging.Sockets, this, SR.Format(SR.event_Connected, LocalEndPoint, RemoteEndPoint));
                 Logging.Exit(Logging.Sockets, this, "EndConnect", "");
             }
         }
@@ -4040,7 +4040,7 @@ namespace System.Net.Sockets
 
             if (s_loggingEnabled)
             {
-                Logging.PrintInfo(Logging.Sockets, socket, SR.Format(SR.net_log_socket_accepted, socket.RemoteEndPoint, socket.LocalEndPoint));
+                Logging.PrintInfo(Logging.Sockets, socket, SR.Format(SR.event_Accepted, socket.RemoteEndPoint, socket.LocalEndPoint));
                 Logging.Exit(Logging.Sockets, this, "EndAccept", socket);
             }
             return socket;
@@ -4992,7 +4992,7 @@ namespace System.Net.Sockets
             SetToConnected();
             if (s_loggingEnabled)
             {
-                Logging.PrintInfo(Logging.Sockets, this, SR.Format(SR.net_log_socket_connected, LocalEndPoint, RemoteEndPoint));
+                Logging.PrintInfo(Logging.Sockets, this, SR.Format(SR.event_Connected, LocalEndPoint, RemoteEndPoint));
                 Logging.Exit(Logging.Sockets, this, "Connect", "");
             }
         }

@@ -111,27 +111,7 @@ namespace System.Net
             {
                 return;
             }
-            string caller;
-            string parameters = "";
-            if (obj is string)
-            {
-                caller = obj as string;
-            }
-            else
-            {
-                caller = Logging.GetObjectLogHash(obj);
-            }
-
-            if (paramObject is string)
-            {
-                parameters = paramObject as string;
-            }
-
-            else if (paramObject != null)
-            {
-                parameters = Logging.GetObjectLogHash(paramObject);
-            }
-            s_httpEventSource.FunctionStart(GetManagedThread(), caller, method, parameters);
+            LoggingUtilities<HttpEventSource>.Enter(s_httpEventSource, obj, method, paramObject);
         }
 
         internal static void Exit(object obj, string method, object retObject)
@@ -178,13 +158,22 @@ namespace System.Net
             s_httpEventSource.CriticalMessage(GetManagedThread(), infoLine);
         }
 
-        internal static void PrintInfo(string msg)
+        //internal static void PrintInfo(string msg)
+        //{
+        //    if (!ValidateSettings())
+        //    {
+        //        return;
+        //    }
+        //    s_httpEventSource.DebugMessage(GetManagedThread(), msg);
+        //}
+
+        internal static void PrintInfo(object obj, string msg)
         {
             if (!ValidateSettings())
             {
                 return;
             }
-            s_httpEventSource.DebugMessage(GetManagedThread(), msg);
+            s_httpEventSource.DebugMessage(GetManagedThread(), Logging.GetObjectLogHash(obj), msg);
         }
 
         internal static void PrintWarning(string msg)
@@ -194,15 +183,6 @@ namespace System.Net
                 return;
             }
             s_httpEventSource.WarningMessage(GetManagedThread(), msg);
-        }
-
-        internal static void PrintInfo(object obj, string msg)
-        {
-            if (!ValidateSettings())
-            {
-                return;
-            }
-            s_httpEventSource.DebugMessage(GetManagedThread(), Logging.GetObjectLogHash(obj), msg);
         }
 
         internal static void PrintError(string msg)
@@ -221,6 +201,15 @@ namespace System.Net
                 return;
             }
             s_httpEventSource.CriticalMessage(GetManagedThread(), Logging.GetObjectLogHash(obj) + "::" + method + "() - " + msg);
+        }
+
+        internal static void UriBaseAddress(object obj, string msg)
+        {
+            if (!ValidateSettings())
+            {
+                return;
+            }
+            s_httpEventSource.UriBaseAddress(GetManagedThread(), Logging.GetObjectLogHash(obj), msg);
         }
     }
 }

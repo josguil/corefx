@@ -712,5 +712,7 @@ namespace System.Net
         AssertFailed,
         CriticalMessage,
         SocketAccepted,
+        SocketConnected,
+        UriBaseAddress
     }
 }

@@ -10,10 +10,8 @@ namespace System.Net
     [EventSource(Name = "Microsoft-System-Net-Sockets",
         Guid = "e03c0352-f9c9-56ff-0ea7-b94ba8cabc6b",
         LocalizationResources = "FxResources.System.Net.Sockets.SR")]
-    internal sealed class SocketsEventSource : EventSource
+    internal sealed class SocketsEventSource : EventSource, ILogging
     {
-        //const string SRsocketAccepted = SR.GetResourceString("net_log_socket_accepted", @"Accepted connection from {0} to {1}.");//"hey";// SR.net_log_socket_accepted;
-        //const string SRsocketAccepted = SR.net_log_socket_accepted;
         private static SocketsEventSource s_log = new SocketsEventSource();
         private SocketsEventSource() { }
         public static SocketsEventSource Log
@@ -33,7 +31,7 @@ namespace System.Net
 
         [Event((int)EventIdManager.FunctionStart, Keywords = Keywords.FunctionEntryExit,
             Level = EventLevel.Verbose, Message = "[{0}] {1}::{2}({3})")]
-        internal unsafe void FunctionStart(string managedThreadID, string caller, string functionName, string parameters)
+        public unsafe void FunctionStart(string managedThreadID, string caller, string functionName, string parameters)
         {
             fixed (char* arg1Ptr = managedThreadID, arg2Ptr = caller, arg3Ptr = functionName, arg4Ptr = parameters)
             {
@@ -112,7 +110,7 @@ namespace System.Net
 
         [Event((int)EventIdManager.SocketAccepted, Keywords = Keywords.Default,
             Level = EventLevel.Informational)]
-        internal unsafe void SocketAccepted(string localEp, string remoteEp, string managedThreadID, string obj)
+        internal unsafe void Accepted(string localEp, string remoteEp, string managedThreadID, string obj)
         {
             fixed (char* arg1Ptr = localEp, arg2Ptr = remoteEp, arg3Ptr = managedThreadID, arg4Ptr = obj)
             {
@@ -129,6 +127,28 @@ namespace System.Net
                 dataDesc[3].Size = (obj.Length + 1) * 2;
 
                 WriteEventCore((int)EventIdManager.SocketAccepted, 4, dataDesc);
+            }
+        }
+
+        [Event((int)EventIdManager.SocketConnected, Keywords = Keywords.Default,
+            Level = EventLevel.Informational)]
+        internal unsafe void Connected(string localEp, string remoteEp, string managedThreadID, string obj)
+        {
+            fixed (char* arg1Ptr = localEp, arg2Ptr = remoteEp, arg3Ptr = managedThreadID, arg4Ptr = obj)
+            {
+
+                EventData* dataDesc = stackalloc EventSource.EventData[4];
+
+                dataDesc[0].DataPointer = (IntPtr)arg1Ptr;
+                dataDesc[0].Size = (localEp.Length + 1) * 2; // Size in bytes, including a null terminator. 
+                dataDesc[1].DataPointer = (IntPtr)(arg2Ptr);
+                dataDesc[1].Size = (remoteEp.Length + 1) * 2;
+                dataDesc[2].DataPointer = (IntPtr)(arg3Ptr);
+                dataDesc[2].Size = (managedThreadID.Length + 1) * 2;
+                dataDesc[3].DataPointer = (IntPtr)(arg4Ptr);
+                dataDesc[3].Size = (obj.Length + 1) * 2;
+
+                WriteEventCore((int)EventIdManager.SocketConnected, 4, dataDesc);
             }
         }
 

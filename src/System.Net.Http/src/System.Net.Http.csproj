@@ -109,6 +109,9 @@
     <Compile Include="$(CommonPath)\System\Net\Logging\Logging.cs">
       <Link>Common\System\Net\Logging\Logging.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\System\Net\Logging\LoggingUtilities.cs">
+      <Link>Common\System\Net\Logging\LoggingUtilities.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\System\Net\Logging\HttpEventSource.cs">
       <Link>Common\System\Net\Logging\HttpEventSource.cs</Link>
     </Compile>

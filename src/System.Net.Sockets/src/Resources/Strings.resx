@@ -258,10 +258,10 @@
   <data name="net_log_exception" xml:space="preserve">
     <value>Exception in {0}::{1} - {2}.</value>
   </data>
-  <data name="net_log_socket_connected" xml:space="preserve">
+  <data name="event_Connected" xml:space="preserve">
     <value>Created connection from {0} to {1}.</value>
   </data>
-  <data name="net_log_socket_accepted" xml:space="preserve">
+  <data name="event_Accepted" xml:space="preserve">
     <value>Accepted connection from {0} to {1}.</value>
   </data>
   <data name="net_log_socket_not_logged_file" xml:space="preserve">
@@ -272,8 +272,5 @@
   </data>
   <data name="ArgumentOutOfRange_Bounds_Lower_Upper" xml:space="preserve">
     <value>Argument must be between {0} and {1}.</value>
-  </data>
-  <data name="event_SocketAccepted" xml:space="preserve">
-    <value>Accepted connection from {0} to {1}.</value>
   </data>
 </root>

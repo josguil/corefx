@@ -105,27 +105,7 @@ namespace System.Net
             {
                 return;
             }
-            string caller;
-            string parameters = "";
-            if (obj is string)
-            {
-                caller = obj as string;
-            }
-            else
-            {
-                caller = Logging.GetObjectLogHash(obj);
-            }
-
-            if (paramObject is string)
-            {
-                parameters = paramObject as string;
-            }
-
-            else if (paramObject != null)
-            {
-                parameters = Logging.GetObjectLogHash(paramObject);
-            }
-            s_socketsEventSource.FunctionStart(GetManagedThread(), caller, method, parameters);
+            LoggingUtilities<SocketsEventSource>.Enter(s_socketsEventSource, obj, method, paramObject);
         }
 
         internal static void Exit(object obj, string method, object retObject)
@@ -172,31 +152,40 @@ namespace System.Net
             s_socketsEventSource.CriticalMessage(GetManagedThread(), infoLine);
         }
 
-        internal static void PrintInfo( string msg)
+        //internal static void PrintInfo(string msg)
+        //{
+        //    if (!ValidateSettings())
+        //    {
+        //        return;
+        //    }
+        //    s_socketsEventSource.DebugMessage(GetManagedThread(), msg);
+        //}
+
+        //internal static void PrintInfo(object obj, string msg)
+        //{
+        //    if (!ValidateSettings())
+        //    {
+        //        return;
+        //    }
+        //    s_socketsEventSource.DebugMessage(GetManagedThread(), Logging.GetObjectLogHash(obj), msg);
+        //}
+
+        internal static void Accepted(object socket, object localEp, object remoteEp)
         {
             if (!ValidateSettings())
             {
                 return;
             }
-            s_socketsEventSource.DebugMessage(GetManagedThread(), msg);
+            s_socketsEventSource.Accepted(Logging.GetObjectName(localEp), Logging.GetObjectName(remoteEp), GetManagedThread(), Logging.GetObjectLogHash(socket));
         }
 
-        internal static void PrintInfo(object obj, string msg)
+        internal static void Connected(object socket, object localEp, object remoteEp)
         {
             if (!ValidateSettings())
             {
                 return;
             }
-            s_socketsEventSource.DebugMessage(GetManagedThread(), Logging.GetObjectLogHash(obj), msg);
-        }
-
-        internal static void SocketAccepted(object socket, object localEp, object remoteEp)
-        {
-            if (!ValidateSettings())
-            {
-                return;
-            }
-            s_socketsEventSource.SocketAccepted(Logging.GetObjectName(localEp), Logging.GetObjectName(remoteEp), GetManagedThread(), Logging.GetObjectLogHash(socket));
+            s_socketsEventSource.Connected(Logging.GetObjectName(localEp), Logging.GetObjectName(remoteEp), GetManagedThread(), Logging.GetObjectLogHash(socket));
         }
 
         internal static void PrintError(string msg)

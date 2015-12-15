@@ -53,7 +53,7 @@ namespace System.Net.Http
                 CheckBaseAddress(value, "value");
                 CheckDisposedOrStarted();
 
-                if (Logging.On) Logging.PrintInfo(Logging.Http, this, "BaseAddress: '" + _baseAddress + "'");
+                if (HttpLogging.On) HttpLogging.UriBaseAddress(this, _baseAddress.ToString());
 
                 _baseAddress = value;
             }
