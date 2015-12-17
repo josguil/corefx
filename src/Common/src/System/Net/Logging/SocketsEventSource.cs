@@ -3,6 +3,7 @@
 
 using System.Diagnostics.Tracing;
 using System.Globalization;
+using System.Net.Sockets;
 
 namespace System.Net
 {
@@ -10,8 +11,10 @@ namespace System.Net
     [EventSource(Name = "Microsoft-System-Net-Sockets",
         Guid = "e03c0352-f9c9-56ff-0ea7-b94ba8cabc6b",
         LocalizationResources = "FxResources.System.Net.Sockets.SR")]
-    internal sealed class SocketsEventSource : EventSource, ILogging
+    internal sealed class SocketsEventSource : EventSource
     {
+        private const int ACCEPTED_ID = 1;
+
         private static SocketsEventSource s_log = new SocketsEventSource();
         private SocketsEventSource() { }
         public static SocketsEventSource Log
@@ -21,134 +24,32 @@ namespace System.Net
                 return s_log;
             }
         }
-
-        [Event((int)EventIdManager.DebugMessage, Keywords = Keywords.Debug,
-            Level = EventLevel.Informational, Message = "[{0}] {2}-{1}")]
-        internal void DebugMessage(string managedThreadID, string message, string obj = "")
+        [NonEvent]
+        internal static void Accepted(Socket socket, object localEp, object remoteEp)
         {
-            WriteEvent((int)EventIdManager.DebugMessage, managedThreadID, message, obj);
-        }
-
-        [Event((int)EventIdManager.FunctionStart, Keywords = Keywords.FunctionEntryExit,
-            Level = EventLevel.Verbose, Message = "[{0}] {1}::{2}({3})")]
-        public unsafe void FunctionStart(string managedThreadID, string caller, string functionName, string parameters)
-        {
-            fixed (char* arg1Ptr = managedThreadID, arg2Ptr = caller, arg3Ptr = functionName, arg4Ptr = parameters)
+            if (!s_log.IsEnabled())
             {
-
-                EventData* dataDesc = stackalloc EventSource.EventData[4];
-
-                dataDesc[0].DataPointer = (IntPtr)arg1Ptr;
-                dataDesc[0].Size = (managedThreadID.Length + 1) * 2; // Size in bytes, including a null terminator. 
-                dataDesc[1].DataPointer = (IntPtr)(arg2Ptr);
-                dataDesc[1].Size = (caller.Length + 1) * 2;
-                dataDesc[2].DataPointer = (IntPtr)(arg3Ptr);
-                dataDesc[2].Size = (functionName.Length + 1) * 2;
-                dataDesc[3].DataPointer = (IntPtr)(arg4Ptr);
-                dataDesc[3].Size = (parameters.Length + 1) * 2;
-
-                WriteEventCore((int)EventIdManager.FunctionStart, 4, dataDesc);
+                return;
             }
+            s_log.Accepted(LoggingHash.GetObjectName(localEp), LoggingHash.GetObjectName(remoteEp), LoggingHash.HashInt(socket));
         }
 
-        [Event((int)EventIdManager.FunctionStop, Keywords = Keywords.FunctionEntryExit,
-            Level = EventLevel.Verbose, Message = "[{0}] {1}::{2}({3})")]
-        internal unsafe void FunctionStop(string managedThreadID, string caller, string functionName, string returnValue)
-        {
-            fixed (char* arg1Ptr = managedThreadID, arg2Ptr = caller, arg3Ptr = functionName, arg4Ptr = returnValue)
-            {
-
-                EventData* dataDesc = stackalloc EventSource.EventData[4];
-
-                dataDesc[0].DataPointer = (IntPtr)arg1Ptr;
-                dataDesc[0].Size = (managedThreadID.Length + 1) * 2; // Size in bytes, including a null terminator. 
-                dataDesc[1].DataPointer = (IntPtr)(arg2Ptr);
-                dataDesc[1].Size = (caller.Length + 1) * 2;
-                dataDesc[2].DataPointer = (IntPtr)(arg3Ptr);
-                dataDesc[2].Size = (functionName.Length + 1) * 2;
-                dataDesc[3].DataPointer = (IntPtr)(arg4Ptr);
-                dataDesc[3].Size = (returnValue.Length + 1) * 2;
-
-                WriteEventCore((int)EventIdManager.FunctionStop, 4, dataDesc);
-            }
-        }
-
-        [Event((int)EventIdManager.CriticalMessage, Keywords = Keywords.Default,
-            Level = EventLevel.Critical, Message = "[{0}] {1}")]
-        internal void CriticalMessage(string managedThreadID, string message)
-        {
-            WriteEvent((int)EventIdManager.CriticalMessage, managedThreadID, message);
-        }
-        [Event((int)EventIdManager.WarningMessage, Keywords = Keywords.Default,
-            Level = EventLevel.Warning, Message = "[{0}] {1}::{2}({3})")]
-        internal unsafe void WarningMessage(string managedThreadID, string obj, string method, string message)
-        {
-            fixed (char* arg1Ptr = managedThreadID, arg2Ptr = obj, arg3Ptr = method, arg4Ptr = message)
-            {
-
-                EventData* dataDesc = stackalloc EventSource.EventData[4];
-
-                dataDesc[0].DataPointer = (IntPtr)arg1Ptr;
-                dataDesc[0].Size = (managedThreadID.Length + 1) * 2; // Size in bytes, including a null terminator. 
-                dataDesc[1].DataPointer = (IntPtr)(arg2Ptr);
-                dataDesc[1].Size = (obj.Length + 1) * 2;
-                dataDesc[2].DataPointer = (IntPtr)(arg3Ptr);
-                dataDesc[2].Size = (method.Length + 1) * 2;
-                dataDesc[3].DataPointer = (IntPtr)(arg4Ptr);
-                dataDesc[3].Size = (message.Length + 1) * 2;
-
-                WriteEventCore((int)EventIdManager.WarningMessage, 4, dataDesc);
-            }
-        }
-
-        [Event((int)EventIdManager.DebugDumpArray, Keywords = Keywords.Debug,
-            Level = EventLevel.Verbose, Message = "[{0}] {1}")]
-        internal void DebugDumpArray(string managedThreadID, string array)
-        {
-            WriteEvent((int)EventIdManager.DebugDumpArray, managedThreadID, array);
-        }
-
-        [Event((int)EventIdManager.SocketAccepted, Keywords = Keywords.Default,
+        [Event(ACCEPTED_ID, Keywords = Keywords.Default,
             Level = EventLevel.Informational)]
-        internal unsafe void Accepted(string localEp, string remoteEp, string managedThreadID, string obj)
+        internal unsafe void Accepted(string localEp, string remoteEp, int socketHash)
         {
-            fixed (char* arg1Ptr = localEp, arg2Ptr = remoteEp, arg3Ptr = managedThreadID, arg4Ptr = obj)
+            fixed (char* arg1Ptr = localEp, arg2Ptr = remoteEp)
             {
 
-                EventData* dataDesc = stackalloc EventSource.EventData[4];
-
+                EventData* dataDesc = stackalloc EventSource.EventData[3];
                 dataDesc[0].DataPointer = (IntPtr)arg1Ptr;
-                dataDesc[0].Size = (localEp.Length + 1) * 2; // Size in bytes, including a null terminator. 
+                dataDesc[0].Size = (localEp.Length + 1) * sizeof(short); // Size in bytes, including a null terminator. 
                 dataDesc[1].DataPointer = (IntPtr)(arg2Ptr);
-                dataDesc[1].Size = (remoteEp.Length + 1) * 2;
-                dataDesc[2].DataPointer = (IntPtr)(arg3Ptr);
-                dataDesc[2].Size = (managedThreadID.Length + 1) * 2;
-                dataDesc[3].DataPointer = (IntPtr)(arg4Ptr);
-                dataDesc[3].Size = (obj.Length + 1) * 2;
+                dataDesc[1].Size = (remoteEp.Length + 1) * sizeof(short);
+                dataDesc[2].DataPointer = (IntPtr)(&socketHash);
+                dataDesc[2].Size = sizeof(int);
 
-                WriteEventCore((int)EventIdManager.SocketAccepted, 4, dataDesc);
-            }
-        }
-
-        [Event((int)EventIdManager.SocketConnected, Keywords = Keywords.Default,
-            Level = EventLevel.Informational)]
-        internal unsafe void Connected(string localEp, string remoteEp, string managedThreadID, string obj)
-        {
-            fixed (char* arg1Ptr = localEp, arg2Ptr = remoteEp, arg3Ptr = managedThreadID, arg4Ptr = obj)
-            {
-
-                EventData* dataDesc = stackalloc EventSource.EventData[4];
-
-                dataDesc[0].DataPointer = (IntPtr)arg1Ptr;
-                dataDesc[0].Size = (localEp.Length + 1) * 2; // Size in bytes, including a null terminator. 
-                dataDesc[1].DataPointer = (IntPtr)(arg2Ptr);
-                dataDesc[1].Size = (remoteEp.Length + 1) * 2;
-                dataDesc[2].DataPointer = (IntPtr)(arg3Ptr);
-                dataDesc[2].Size = (managedThreadID.Length + 1) * 2;
-                dataDesc[3].DataPointer = (IntPtr)(arg4Ptr);
-                dataDesc[3].Size = (obj.Length + 1) * 2;
-
-                WriteEventCore((int)EventIdManager.SocketConnected, 4, dataDesc);
+                WriteEventCore(ACCEPTED_ID, 3, dataDesc);
             }
         }
 
@@ -156,7 +57,6 @@ namespace System.Net
         {
             public const EventKeywords Default = (EventKeywords)0x0001;
             public const EventKeywords Debug = (EventKeywords)0x0002;
-            public const EventKeywords FunctionEntryExit = (EventKeywords)0x0004;
         }
     }
 }

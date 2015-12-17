@@ -258,7 +258,7 @@
   <data name="net_log_exception" xml:space="preserve">
     <value>Exception in {0}::{1} - {2}.</value>
   </data>
-  <data name="event_Connected" xml:space="preserve">
+  <data name="net_log_socket_connected" xml:space="preserve">
     <value>Created connection from {0} to {1}.</value>
   </data>
   <data name="event_Accepted" xml:space="preserve">

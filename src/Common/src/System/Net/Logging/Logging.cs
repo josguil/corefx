@@ -699,20 +699,4 @@ namespace System.Net
             }
         }
     }
-
-    internal enum EventIdManager
-    {
-        DebugMessage = 1,
-        Associate,
-        DebugDumpArray,
-        WarningDumpArray,
-        FunctionStart,
-        FunctionStop,
-        WarningMessage,
-        AssertFailed,
-        CriticalMessage,
-        SocketAccepted,
-        SocketConnected,
-        UriBaseAddress
-    }
 }

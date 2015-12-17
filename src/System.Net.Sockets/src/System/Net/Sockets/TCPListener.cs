@@ -207,9 +207,9 @@ namespace System.Net.Sockets
 
         internal IAsyncResult BeginAcceptSocket(AsyncCallback callback, object state)
         {
-            if (SocketsLogging.On)
+            if (NetEventSource.Log.IsEnabled())
             {
-                SocketsLogging.Enter(this, "BeginAcceptSocket", null);
+                NetEventSource.Enter(this, "BeginAcceptSocket", null, NetEventSource.Component.Socket);
             }
 
             if (!_active)

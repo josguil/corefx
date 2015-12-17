@@ -86,10 +86,10 @@ namespace System.Net.Sockets
         // Initializes a new instance of the Sockets.Socket class.
         public Socket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
         {
-            s_loggingEnabled = SocketsLogging.On;
+            s_loggingEnabled = SocketsEventSource.Log.IsEnabled();
             if (s_loggingEnabled)
             {
-                SocketsLogging.Enter(this, "Socket", addressFamily);
+                NetEventSource.Enter(this, "Socket", addressFamily, NetEventSource.Component.Socket);
             }
 
             InitializeSockets();
@@ -2507,7 +2507,7 @@ namespace System.Net.Sockets
             }
             if (s_loggingEnabled)
             {
-                Logging.PrintInfo(Logging.Sockets, this, SR.Format(SR.event_Connected, LocalEndPoint, RemoteEndPoint));
+                Logging.PrintInfo(Logging.Sockets, this, SR.Format(SR.net_log_socket_connected, LocalEndPoint, RemoteEndPoint));
                 Logging.Exit(Logging.Sockets, this, "EndConnect", "");
             }
         }
@@ -4992,7 +4992,7 @@ namespace System.Net.Sockets
             SetToConnected();
             if (s_loggingEnabled)
             {
-                Logging.PrintInfo(Logging.Sockets, this, SR.Format(SR.event_Connected, LocalEndPoint, RemoteEndPoint));
+                Logging.PrintInfo(Logging.Sockets, this, SR.Format(SR.net_log_socket_connected, LocalEndPoint, RemoteEndPoint));
                 Logging.Exit(Logging.Sockets, this, "Connect", "");
             }
         }
