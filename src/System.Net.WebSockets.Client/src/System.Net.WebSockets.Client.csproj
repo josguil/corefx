@@ -24,7 +24,7 @@
   <ItemGroup>
     <Compile Include="System\Net\WebSockets\ClientWebSocket.cs" />
     <Compile Include="System\Net\WebSockets\ClientWebSocketOptions.cs" />
-    
+
     <Compile Include="$(CommonPath)\System\Net\Logging.cs">
       <Link>Common\System\Net\Logging.cs</Link>
     </Compile>

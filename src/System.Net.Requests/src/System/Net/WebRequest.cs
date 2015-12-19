@@ -44,7 +44,7 @@ namespace System.Net
         {
             if (Logging.On)
             {
-                Logging.Enter(LoggingWeb, "WebRequest", "Create", requestUri.ToString());
+                Logging.Enter(Logging.Web, "WebRequest", "Create", requestUri.ToString());
             }
 
             string LookupUri;
