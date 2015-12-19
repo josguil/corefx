@@ -38,18 +38,19 @@ namespace System.Net
             Level = EventLevel.Informational)]
         internal unsafe void Accepted(string localEp, string remoteEp, int socketHash)
         {
+            const int SIZEDATA = 3;
             fixed (char* arg1Ptr = localEp, arg2Ptr = remoteEp)
             {
 
-                EventData* dataDesc = stackalloc EventSource.EventData[3];
-                dataDesc[0].DataPointer = (IntPtr)arg1Ptr;
-                dataDesc[0].Size = (localEp.Length + 1) * sizeof(short); // Size in bytes, including a null terminator. 
+                EventData* dataDesc = stackalloc EventSource.EventData[SIZEDATA];
+                dataDesc[0].DataPointer = (IntPtr)(arg1Ptr);
+                dataDesc[0].Size = (localEp.Length + 1) * sizeof(char); // Size in bytes, including a null terminator. 
                 dataDesc[1].DataPointer = (IntPtr)(arg2Ptr);
-                dataDesc[1].Size = (remoteEp.Length + 1) * sizeof(short);
+                dataDesc[1].Size = (remoteEp.Length + 1) * sizeof(char);
                 dataDesc[2].DataPointer = (IntPtr)(&socketHash);
                 dataDesc[2].Size = sizeof(int);
 
-                WriteEventCore(ACCEPTED_ID, 3, dataDesc);
+                WriteEventCore(ACCEPTED_ID, SIZEDATA, dataDesc);
             }
         }
 
