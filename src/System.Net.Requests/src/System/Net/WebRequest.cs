@@ -42,9 +42,9 @@ namespace System.Net
         //     Newly created WebRequest.
         private static WebRequest Create(Uri requestUri, bool useUriBase)
         {
-            if (NetLogging.On)
+            if (Logging.On)
             {
-                NetLogging.Enter("WebRequest", "Create", requestUri.ToString());
+                Logging.Enter(LoggingWeb, "WebRequest", "Create", requestUri.ToString());
             }
 
             string LookupUri;
