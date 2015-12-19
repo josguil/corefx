@@ -89,7 +89,7 @@ namespace System.Net.Sockets
             s_loggingEnabled = SocketsEventSource.Log.IsEnabled();
             if (s_loggingEnabled)
             {
-                NetEventSource.Enter(this, "Socket", addressFamily, NetEventSource.Component.Socket);
+                NetEventSource.Enter(NetEventSource.ComponentType.Socket, this, "Socket", addressFamily);
             }
 
             InitializeSockets();
@@ -194,7 +194,7 @@ namespace System.Net.Sockets
                     UpdateStatusAfterSocketError(socketException);
                     if (s_loggingEnabled)
                     {
-                        Logging.Exception(Logging.Sockets, this, "Available", socketException);
+                        NetEventSource.Exception(NetEventSource.ComponentType.Socket, this, "Available", socketException);
                     }
                     throw socketException;
                 }
@@ -5839,7 +5839,7 @@ namespace System.Net.Sockets
             GlobalLog.Print("Socket#" + Logging.HashString(this) + "::UpdateStatusAfterSocketError(socketException)");
             if (s_loggingEnabled)
             {
-                Logging.PrintError(Logging.Sockets, this, "UpdateStatusAfterSocketError", errorCode.ToString());
+                NetEventSource.PrintError(NetEventSource.ComponentType.Socket, this, "UpdateStatusAfterSocketError", errorCode.ToString());
             }
 
             if (_isConnected && (_handle.IsInvalid || (errorCode != SocketError.WouldBlock &&

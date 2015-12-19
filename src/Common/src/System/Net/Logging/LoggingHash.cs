@@ -21,7 +21,7 @@ namespace System.Net
             {
                 return "null";
             }
-            if (obj is Uri || obj is System.Net.IPAddress || obj is System.Net.IPEndPoint)
+            if (obj is Uri || obj is System.Net.IPAddress || obj is System.Net.IPEndPoint || obj is string)
             {
                 return obj.ToString();
             }

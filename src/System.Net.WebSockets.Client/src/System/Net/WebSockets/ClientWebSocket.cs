@@ -27,9 +27,9 @@ namespace System.Net.WebSockets
 
         public ClientWebSocket()
         {
-            if (WebSocketsLogging.On)
+            if (Logging.On)
             {
-                WebSocketsLogging.Enter(this, ".ctor", null);
+                Logging.Enter(Logging.WebSockets, this, ".ctor", null);
             }
 
             WebSocketHandle.CheckPlatformSupport();

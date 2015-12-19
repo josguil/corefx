@@ -53,7 +53,7 @@ namespace System.Net.Http
                 CheckBaseAddress(value, "value");
                 CheckDisposedOrStarted();
 
-                if (HttpLogging.On) HttpLogging.UriBaseAddress(this, _baseAddress.ToString());
+                if (HttpEventSource.Log.IsEnabled()) HttpEventSource.UriBaseAddress(this, _baseAddress.ToString());
 
                 _baseAddress = value;
             }
@@ -110,7 +110,7 @@ namespace System.Net.Http
         public HttpClient(HttpMessageHandler handler, bool disposeHandler)
             : base(handler, disposeHandler)
         {
-            if (HttpLogging.On) HttpLogging.Enter(this, ".ctor", handler);
+            if (NetEventSource.Log.IsEnabled()) NetEventSource.Enter(NetEventSource.ComponentType.Http, this, ".ctor", handler);
 
             _timeout = s_defaultTimeout;
             _maxResponseContentBufferSize = HttpContent.MaxBufferSize;

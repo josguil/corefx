@@ -207,6 +207,8 @@ namespace System.Net
                     s_cacheTraceSource = new NclTraceSource(TraceSourceCacheName);
                     s_traceSourceHttpName = new NclTraceSource(TraceSourceHttpName);
 
+                    GlobalLog.Print("Initalizating tracing");
+
                     try
                     {
                         loggingEnabled = (s_webTraceSource.Switch.ShouldTrace(TraceEventType.Critical) ||
@@ -287,7 +289,7 @@ namespace System.Net
         // Converts an object to a normalized string that can be printed
         // takes System.Net.ObjectNamedFoo and coverts to ObjectNamedFoo, 
         // except IPAddress, IPEndPoint, and Uri, which return ToString().
-        internal static string GetObjectName(object obj)
+        private static string GetObjectName(object obj)
         {
             if (obj is Uri || obj is System.Net.IPAddress || obj is System.Net.IPEndPoint)
             {
@@ -470,8 +472,7 @@ namespace System.Net
                 return;
             }
 
-            //string infoLine = SR.Format(SR.net_log_exception, GetObjectLogHash(obj), method, e.Message);
-            string infoLine = e.Message;
+            string infoLine = SR.Format(SR.net_log_exception, GetObjectLogHash(obj), method, e.Message);
             if (!string.IsNullOrEmpty(e.StackTrace))
             {
                 infoLine += Environment.NewLine + e.StackTrace;

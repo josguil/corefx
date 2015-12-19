@@ -209,7 +209,7 @@ namespace System.Net.Sockets
         {
             if (NetEventSource.Log.IsEnabled())
             {
-                NetEventSource.Enter(this, "BeginAcceptSocket", null, NetEventSource.Component.Socket);
+                NetEventSource.Enter(NetEventSource.ComponentType.Socket, this, "BeginAcceptSocket", null);
             }
 
             if (!_active)
