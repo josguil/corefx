@@ -25,7 +25,7 @@ namespace System.Net.Sockets
             if (errorCode == SocketError.Success)
             {
                 _localBytesTransferred = numBytes;
-                if (Logging.On)
+                if (NetEventSource.Log.IsEnabled())
                 {
                     LogBuffer((long)numBytes);
                 }
@@ -101,17 +101,17 @@ namespace System.Net.Sockets
 
         private void LogBuffer(long size)
         {
-            GlobalLog.Assert(Logging.On, "AcceptOverlappedAsyncResult#{0}::LogBuffer()|Logging is off!", Logging.HashString(this));
+            GlobalLog.Assert(NetEventSource.Log.IsEnabled(), "AcceptOverlappedAsyncResult#{0}::LogBuffer()|Logging is off!", Logging.HashString(this));
             IntPtr pinnedBuffer = Marshal.UnsafeAddrOfPinnedArrayElement(_buffer, 0);
             if (pinnedBuffer != IntPtr.Zero)
             {
                 if (size > -1)
                 {
-                    Logging.Dump(Logging.Sockets, _listenSocket, "PostCompletion", pinnedBuffer, (int)Math.Min(size, (long)_buffer.Length));
+                    SocketsEventSource.Dump(SocketsEventSource.MethodType.PostCompletion, pinnedBuffer, (int)Math.Min(size, (long)_buffer.Length));
                 }
                 else
                 {
-                    Logging.Dump(Logging.Sockets, _listenSocket, "PostCompletion", pinnedBuffer, (int)_buffer.Length);
+                    SocketsEventSource.Dump(SocketsEventSource.MethodType.PostCompletion, pinnedBuffer, (int)_buffer.Length);
                 }
             }
         }
