@@ -720,7 +720,7 @@ namespace System.Net.Sockets
                     if (socketError == SocketError.Success)
                     {
                         if (s_loggingEnabled)
-                            Logging.PrintInfo(Logging.Sockets, _currentSocket, SR.Format(SR.net_log_socket_connected, _currentSocket.LocalEndPoint, _currentSocket.RemoteEndPoint));
+                            SocketsEventSource.Connected(_currentSocket, _currentSocket.LocalEndPoint, _currentSocket.RemoteEndPoint);
 
                         _currentSocket.SetToConnected();
                         _connectSocket = _currentSocket;
