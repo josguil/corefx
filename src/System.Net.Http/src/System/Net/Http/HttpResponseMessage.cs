@@ -50,7 +50,7 @@ namespace System.Net.Http
                     }
                     else
                     {
-                        Logging.Associate(Logging.Http, this, value);
+                        HttpEventSource.Associate(this, value);
                     }
                 }
 
@@ -114,7 +114,7 @@ namespace System.Net.Http
             set
             {
                 CheckDisposed();
-                if (Logging.On && (value != null)) Logging.Associate(Logging.Http, this, value);
+                if (Logging.On && (value != null)) HttpEventSource.Associate(this, value);
                 _requestMessage = value;
             }
         }
@@ -131,7 +131,7 @@ namespace System.Net.Http
 
         public HttpResponseMessage(HttpStatusCode statusCode)
         {
-            if (Logging.On) Logging.Enter(Logging.Http, this, ".ctor", "StatusCode: " + (int)statusCode + ", ReasonPhrase: '" + _reasonPhrase + "'");
+            if (NetEventSource.Log.IsEnabled()) NetEventSource.Enter(NetEventSource.ComponentType.Http, this, ".ctor", "StatusCode: " + (int)statusCode + ", ReasonPhrase: '" + _reasonPhrase + "'");
 
             if (((int)statusCode < 0) || ((int)statusCode > 999))
             {
@@ -141,7 +141,7 @@ namespace System.Net.Http
             _statusCode = statusCode;
             _version = HttpUtilities.DefaultResponseVersion;
 
-            if (Logging.On) Logging.Exit(Logging.Http, this, ".ctor", null);
+            if (NetEventSource.Log.IsEnabled()) NetEventSource.Exit(NetEventSource.ComponentType.Http, this, ".ctor", null);
         }
 
         public HttpResponseMessage EnsureSuccessStatusCode()
