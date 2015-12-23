@@ -41,6 +41,62 @@ namespace System.Net
                 return objectValue.GetHashCode();
             }
         }
+
+        internal static string ObjectToString(object objectValue)
+        {
+            if (objectValue == null)
+            {
+                return "(null)";
+            }
+            else if (objectValue is string && ((string)objectValue).Length == 0)
+            {
+                return "(string.empty)";
+            }
+            else if (objectValue is Exception)
+            {
+                return ExceptionMessage(objectValue as Exception);
+            }
+            else if (objectValue is IntPtr)
+            {
+                return "0x" + ((IntPtr)objectValue).ToString("x");
+            }
+            else
+            {
+                return objectValue.ToString();
+            }
+        }
+
+        private static string ExceptionMessage(Exception exception)
+        {
+            if (exception == null)
+            {
+                return string.Empty;
+            }
+
+            if (exception.InnerException == null)
+            {
+                return exception.Message;
+            }
+
+            return exception.Message + " (" + ExceptionMessage(exception.InnerException) + ")";
+        }
+
+        internal static string HashString(object objectValue)
+        {
+            if (objectValue == null)
+            {
+                return "(null)";
+            }
+            else if (objectValue is string && ((string)objectValue).Length == 0)
+            {
+                return "(string.empty)";
+            }
+            else
+            {
+                return objectValue.GetHashCode().ToString(NumberFormatInfo.InvariantInfo);
+            }
+        }
+
         internal static object[] GetObjectLogHash(object obj)
         {
             object[] hashObject = new object[2];
