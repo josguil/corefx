@@ -42,11 +42,11 @@ namespace System.Net.Http
             {
                 CheckDisposed();
 
-                if (Logging.On)
+                if (HttpEventSource.Log.IsEnabled())
                 {
                     if (value == null)
                     {
-                        Logging.PrintInfo(Logging.Http, this, SR.net_http_log_content_null);
+                        HttpEventSource.ContentNull(this);
                     }
                     else
                     {
@@ -114,7 +114,7 @@ namespace System.Net.Http
             set
             {
                 CheckDisposed();
-                if (Logging.On && (value != null)) HttpEventSource.Associate(this, value);
+                if (HttpEventSource.Log.IsEnabled() && (value != null)) HttpEventSource.Associate(this, value);
                 _requestMessage = value;
             }
         }

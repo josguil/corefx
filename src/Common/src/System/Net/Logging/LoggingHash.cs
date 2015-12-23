@@ -41,5 +41,12 @@ namespace System.Net
                 return objectValue.GetHashCode();
             }
         }
+        internal static object[] GetObjectLogHash(object obj)
+        {
+            object[] hashObject = new object[2];
+            hashObject[0] = GetObjectName(obj);
+            hashObject[1] = HashInt(obj);
+            return hashObject;
+        }
     }
 }

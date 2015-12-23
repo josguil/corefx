@@ -48,7 +48,7 @@ namespace System.Net.Http
 
             if (NetEventSource.Log.IsEnabled())
                 NetEventSource.Enter(NetEventSource.ComponentType.Http, this, "SendAsync",
-    Logging.GetObjectLogHash(request) + ": " + request);
+    LoggingHash.GetObjectLogHash(request) + ": " + request);
 
             Task<HttpResponseMessage> task = _handler.SendAsync(request, cancellationToken);
 

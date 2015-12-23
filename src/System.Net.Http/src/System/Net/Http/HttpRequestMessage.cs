@@ -48,11 +48,11 @@ namespace System.Net.Http
             {
                 CheckDisposed();
 
-                if (Logging.On)
+                if (HttpEventSource.Log.IsEnabled())
                 {
                     if (value == null)
                     {
-                        Logging.PrintInfo(Logging.Http, this, SR.net_http_log_content_null);
+                        HttpEventSource.ContentNull(this);
                     }
                     else
                     {
