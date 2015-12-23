@@ -207,6 +207,8 @@ namespace System.Net
                     s_cacheTraceSource = new NclTraceSource(TraceSourceCacheName);
                     s_traceSourceHttpName = new NclTraceSource(TraceSourceHttpName);
 
+                    GlobalLog.Print("Initalizating tracing");
+
                     try
                     {
                         loggingEnabled = (s_webTraceSource.Switch.ShouldTrace(TraceEventType.Critical) ||
@@ -305,179 +307,179 @@ namespace System.Net
             traceSource.TraceEvent(eventType, id, logHeader + msg);
         }
 
-        //internal static void Associate(TraceSource traceSource, object objA, object objB)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Associate(TraceSource traceSource, object objA, object objB)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    string lineA = GetObjectName(objA) + "#" + Logging.HashString(objA);
-        //    string lineB = GetObjectName(objB) + "#" + Logging.HashString(objB);
+            string lineA = GetObjectName(objA) + "#" + Logging.HashString(objA);
+            string lineB = GetObjectName(objB) + "#" + Logging.HashString(objB);
 
-        //    PrintLine(traceSource, TraceEventType.Information, 0, "Associating " + lineA + " with " + lineB);
-        //}
+            PrintLine(traceSource, TraceEventType.Information, 0, "Associating " + lineA + " with " + lineB);
+        }
 
-        //internal static void Enter(TraceSource traceSource, object obj, string method, string param)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Enter(TraceSource traceSource, object obj, string method, string param)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    Enter(traceSource, GetObjectName(obj) + "#" + Logging.HashString(obj), method, param);
-        //}
+            Enter(traceSource, GetObjectName(obj) + "#" + Logging.HashString(obj), method, param);
+        }
 
-        //internal static void Enter(TraceSource traceSource, object obj, string method, object paramObject)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Enter(TraceSource traceSource, object obj, string method, object paramObject)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    Enter(traceSource, GetObjectName(obj) + "#" + Logging.HashString(obj), method, paramObject);
-        //}
+            Enter(traceSource, GetObjectName(obj) + "#" + Logging.HashString(obj), method, paramObject);
+        }
 
-        //internal static void Enter(TraceSource traceSource, string obj, string method, string param)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Enter(TraceSource traceSource, string obj, string method, string param)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    Enter(traceSource, obj + "::" + method + "(" + param + ")");
-        //}
+            Enter(traceSource, obj + "::" + method + "(" + param + ")");
+        }
 
-        //internal static void Enter(TraceSource traceSource, string obj, string method, object paramObject)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Enter(TraceSource traceSource, string obj, string method, object paramObject)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    string paramObjectValue = "";
-        //    if (paramObject != null)
-        //    {
-        //        paramObjectValue = GetObjectName(paramObject) + "#" + Logging.HashString(paramObject);
-        //    }
+            string paramObjectValue = "";
+            if (paramObject != null)
+            {
+                paramObjectValue = GetObjectName(paramObject) + "#" + Logging.HashString(paramObject);
+            }
 
-        //    Enter(traceSource, obj + "::" + method + "(" + paramObjectValue + ")");
-        //}
+            Enter(traceSource, obj + "::" + method + "(" + paramObjectValue + ")");
+        }
 
-        //internal static void Enter(TraceSource traceSource, string method, string parameters)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Enter(TraceSource traceSource, string method, string parameters)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    Enter(traceSource, method + "(" + parameters + ")");
-        //}
+            Enter(traceSource, method + "(" + parameters + ")");
+        }
 
-        //internal static void Enter(TraceSource traceSource, string msg)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Enter(TraceSource traceSource, string msg)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    // Trace.CorrelationManager.StartLogicalOperation();
-        //    PrintLine(traceSource, TraceEventType.Verbose, 0, msg);
-        //}
+            // Trace.CorrelationManager.StartLogicalOperation();
+            PrintLine(traceSource, TraceEventType.Verbose, 0, msg);
+        }
 
-        //internal static void Exit(TraceSource traceSource, object obj, string method, object retObject)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Exit(TraceSource traceSource, object obj, string method, object retObject)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    string retValue = "";
-        //    if (retObject != null)
-        //    {
-        //        retValue = GetObjectName(retObject) + "#" + Logging.HashString(retObject);
-        //    }
+            string retValue = "";
+            if (retObject != null)
+            {
+                retValue = GetObjectName(retObject) + "#" + Logging.HashString(retObject);
+            }
 
-        //    Exit(traceSource, obj, method, retValue);
-        //}
+            Exit(traceSource, obj, method, retValue);
+        }
 
-        //internal static void Exit(TraceSource traceSource, string obj, string method, object retObject)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Exit(TraceSource traceSource, string obj, string method, object retObject)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    string retValue = "";
-        //    if (retObject != null)
-        //    {
-        //        retValue = GetObjectName(retObject) + "#" + Logging.HashString(retObject);
-        //    }
+            string retValue = "";
+            if (retObject != null)
+            {
+                retValue = GetObjectName(retObject) + "#" + Logging.HashString(retObject);
+            }
 
-        //    Exit(traceSource, obj, method, retValue);
-        //}
+            Exit(traceSource, obj, method, retValue);
+        }
 
-        //internal static void Exit(TraceSource traceSource, object obj, string method, string retValue)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Exit(TraceSource traceSource, object obj, string method, string retValue)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    Exit(traceSource, GetObjectName(obj) + "#" + Logging.HashString(obj), method, retValue);
-        //}
+            Exit(traceSource, GetObjectName(obj) + "#" + Logging.HashString(obj), method, retValue);
+        }
 
-        //internal static void Exit(TraceSource traceSource, string obj, string method, string retValue)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Exit(TraceSource traceSource, string obj, string method, string retValue)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    if (!string.IsNullOrEmpty(retValue))
-        //    {
-        //        retValue = "\t-> " + retValue;
-        //    }
+            if (!string.IsNullOrEmpty(retValue))
+            {
+                retValue = "\t-> " + retValue;
+            }
 
-        //    Exit(traceSource, obj + "::" + method + "() " + retValue);
-        //}
+            Exit(traceSource, obj + "::" + method + "() " + retValue);
+        }
 
-        //internal static void Exit(TraceSource traceSource, string method, string parameters)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Exit(TraceSource traceSource, string method, string parameters)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    Exit(traceSource, method + "() " + parameters);
-        //}
+            Exit(traceSource, method + "() " + parameters);
+        }
 
-        //internal static void Exit(TraceSource traceSource, string msg)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Information))
-        //    {
-        //        return;
-        //    }
+        internal static void Exit(TraceSource traceSource, string msg)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Information))
+            {
+                return;
+            }
 
-        //    PrintLine(traceSource, TraceEventType.Verbose, 0, "Exiting " + msg);
-        //    // Trace.CorrelationManager.StopLogicalOperation();
-        //}
+            PrintLine(traceSource, TraceEventType.Verbose, 0, "Exiting " + msg);
+            // Trace.CorrelationManager.StopLogicalOperation();
+        }
 
-        //internal static void Exception(TraceSource traceSource, object obj, string method, Exception e)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Error))
-        //    {
-        //        return;
-        //    }
+        internal static void Exception(TraceSource traceSource, object obj, string method, Exception e)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Error))
+            {
+                return;
+            }
 
-        //    string infoLine = SR.Format(SR.net_log_exception, GetObjectLogHash(obj), method, e.Message);
-        //    if (!string.IsNullOrEmpty(e.StackTrace))
-        //    {
-        //        infoLine += Environment.NewLine + e.StackTrace;
-        //    }
+            string infoLine = SR.Format(SR.net_log_exception, GetObjectLogHash(obj), method, e.Message);
+            if (!string.IsNullOrEmpty(e.StackTrace))
+            {
+                infoLine += Environment.NewLine + e.StackTrace;
+            }
 
-        //    PrintLine(traceSource, TraceEventType.Error, 0, infoLine);
-        //}
+            PrintLine(traceSource, TraceEventType.Error, 0, infoLine);
+        }
 
         internal static void PrintInfo(TraceSource traceSource, string msg)
         {
@@ -535,104 +537,104 @@ namespace System.Net
                                    + "::" + method + "() - " + msg);
         }
 
-        //internal static void PrintError(TraceSource traceSource, string msg)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Error))
-        //    {
-        //        return;
-        //    }
+        internal static void PrintError(TraceSource traceSource, string msg)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Error))
+            {
+                return;
+            }
 
-        //    PrintLine(traceSource, TraceEventType.Error, 0, msg);
-        //}
+            PrintLine(traceSource, TraceEventType.Error, 0, msg);
+        }
 
-        //internal static void PrintError(TraceSource traceSource, object obj, string method, string msg)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Error))
-        //    {
-        //        return;
-        //    }
+        internal static void PrintError(TraceSource traceSource, object obj, string method, string msg)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Error))
+            {
+                return;
+            }
 
-        //    PrintLine(traceSource, TraceEventType.Error, 0,
-        //                           GetObjectName(obj) + "#" + Logging.HashString(obj)
-        //                           + "::" + method + "() - " + msg);
-        //}
+            PrintLine(traceSource, TraceEventType.Error, 0,
+                                   GetObjectName(obj) + "#" + Logging.HashString(obj)
+                                   + "::" + method + "() - " + msg);
+        }
 
         internal static string GetObjectLogHash(object obj)
         {
             return GetObjectName(obj) + "#" + Logging.HashString(obj);
         }
 
-        //internal static void Dump(TraceSource traceSource, object obj, string method, IntPtr bufferPtr, int length)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Verbose) || bufferPtr == IntPtr.Zero || length < 0)
-        //    {
-        //        return;
-        //    }
+        internal static void Dump(TraceSource traceSource, object obj, string method, IntPtr bufferPtr, int length)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Verbose) || bufferPtr == IntPtr.Zero || length < 0)
+            {
+                return;
+            }
 
-        //    byte[] buffer = new byte[length];
-        //    Marshal.Copy(bufferPtr, buffer, 0, length);
-        //    Dump(traceSource, obj, method, buffer, 0, length);
-        //}
+            byte[] buffer = new byte[length];
+            Marshal.Copy(bufferPtr, buffer, 0, length);
+            Dump(traceSource, obj, method, buffer, 0, length);
+        }
 
-        //internal static void Dump(TraceSource traceSource, object obj, string method, byte[] buffer, int offset, int length)
-        //{
-        //    if (!ValidateSettings(traceSource, TraceEventType.Verbose))
-        //    {
-        //        return;
-        //    }
+        internal static void Dump(TraceSource traceSource, object obj, string method, byte[] buffer, int offset, int length)
+        {
+            if (!ValidateSettings(traceSource, TraceEventType.Verbose))
+            {
+                return;
+            }
 
-        //    if (buffer == null)
-        //    {
-        //        PrintLine(traceSource, TraceEventType.Verbose, 0, "(null)");
-        //        return;
-        //    }
+            if (buffer == null)
+            {
+                PrintLine(traceSource, TraceEventType.Verbose, 0, "(null)");
+                return;
+            }
 
-        //    if (offset > buffer.Length)
-        //    {
-        //        PrintLine(traceSource, TraceEventType.Verbose, 0, "(offset out of range)");
-        //        return;
-        //    }
+            if (offset > buffer.Length)
+            {
+                PrintLine(traceSource, TraceEventType.Verbose, 0, "(offset out of range)");
+                return;
+            }
 
-        //    PrintLine(traceSource, TraceEventType.Verbose, 0, "Data from " + GetObjectName(obj) + "#" + Logging.HashString(obj) + "::" + method);
-        //    int maxDumpSize = GetMaxDumpSizeSetting(traceSource);
-        //    if (length > maxDumpSize)
-        //    {
-        //        PrintLine(traceSource, TraceEventType.Verbose, 0, "(printing " + maxDumpSize.ToString(NumberFormatInfo.InvariantInfo) + " out of " + length.ToString(NumberFormatInfo.InvariantInfo) + ")");
-        //        length = maxDumpSize;
-        //    }
+            PrintLine(traceSource, TraceEventType.Verbose, 0, "Data from " + GetObjectName(obj) + "#" + Logging.HashString(obj) + "::" + method);
+            int maxDumpSize = GetMaxDumpSizeSetting(traceSource);
+            if (length > maxDumpSize)
+            {
+                PrintLine(traceSource, TraceEventType.Verbose, 0, "(printing " + maxDumpSize.ToString(NumberFormatInfo.InvariantInfo) + " out of " + length.ToString(NumberFormatInfo.InvariantInfo) + ")");
+                length = maxDumpSize;
+            }
 
-        //    if ((length < 0) || (length > buffer.Length - offset))
-        //    {
-        //        length = buffer.Length - offset;
-        //    }
+            if ((length < 0) || (length > buffer.Length - offset))
+            {
+                length = buffer.Length - offset;
+            }
 
-        //    do
-        //    {
-        //        int n = Math.Min(length, 16);
-        //        string disp = string.Format(CultureInfo.CurrentCulture, "{0:X8} : ", offset);
-        //        for (int i = 0; i < n; ++i)
-        //        {
-        //            disp += string.Format(CultureInfo.CurrentCulture, "{0:X2}", buffer[offset + i]) + ((i == 7) ? '-' : ' ');
-        //        }
+            do
+            {
+                int n = Math.Min(length, 16);
+                string disp = string.Format(CultureInfo.CurrentCulture, "{0:X8} : ", offset);
+                for (int i = 0; i < n; ++i)
+                {
+                    disp += string.Format(CultureInfo.CurrentCulture, "{0:X2}", buffer[offset + i]) + ((i == 7) ? '-' : ' ');
+                }
 
-        //        for (int i = n; i < 16; ++i)
-        //        {
-        //            disp += "   ";
-        //        }
+                for (int i = n; i < 16; ++i)
+                {
+                    disp += "   ";
+                }
 
-        //        disp += ": ";
-        //        for (int i = 0; i < n; ++i)
-        //        {
-        //            disp += ((buffer[offset + i] < 0x20) || (buffer[offset + i] > 0x7e))
-        //                        ? '.'
-        //                        : (char)(buffer[offset + i]);
-        //        }
+                disp += ": ";
+                for (int i = 0; i < n; ++i)
+                {
+                    disp += ((buffer[offset + i] < 0x20) || (buffer[offset + i] > 0x7e))
+                                ? '.'
+                                : (char)(buffer[offset + i]);
+                }
 
-        //        PrintLine(traceSource, TraceEventType.Verbose, 0, disp);
-        //        offset += n;
-        //        length -= n;
-        //    } while (length > 0);
-        //}
+                PrintLine(traceSource, TraceEventType.Verbose, 0, disp);
+                offset += n;
+                length -= n;
+            } while (length > 0);
+        }
 
         internal static string ObjectToString(object objectValue)
         {
